@@ -70,7 +70,9 @@ class ConfigLoader : ClassVisitor(1) {
                 field.set(findInstance(owner), conf)
                 // 自动重载
                 if (configAnno.property("autoReload", false)) {
+                    PrimitiveIO.debug("Listening config file changes: ${file.absolutePath}")
                     FileWatcher.INSTANCE.addSimpleListener(file) {
+                        PrimitiveIO.debug("Config file changed: ${file.absolutePath}")
                         if (file.exists()) {
                             conf.loadFromFile(file)
                         }
