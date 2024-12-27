@@ -125,14 +125,14 @@ public class FileWatcher {
         final WatchKey watchKey;
 
         FileListener(File file, Consumer<File> callback, FileWatcher fileWatcher) throws IOException {
-            this.file = file;
+            this.file = file.getCanonicalFile();
             this.callback = callback;
             this.fileWatcher = fileWatcher;
             Path path;
-            if (file.isDirectory()) {
-                path = file.toPath();
+            if (this.file.isDirectory()) {
+                path = this.file.toPath();
             } else {
-                path = file.getParentFile().toPath();
+                path = this.file.getParentFile().toPath();
             }
             watchKey = path.register(
                     fileWatcher.watchService,
