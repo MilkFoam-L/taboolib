@@ -4,9 +4,11 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper
 import taboolib.common.TabooLib
-import taboolib.common.io.BinaryClass
+import taboolib.common.BinaryCache
 import taboolib.common.io.digest
 import taboolib.common.io.taboolibPath
+import taboolib.common.platform.function.debug
+import taboolib.common.util.execution
 import taboolib.common.util.t
 import taboolib.module.nms.remap.RemapTranslation
 import taboolib.module.nms.remap.RemapTranslationLegacy
@@ -50,24 +52,31 @@ class AsmClassTranslation(val source: String) {
         val bytes = inputStream.readBytes()
         val srcVersion = bytes.digest()
         // 若存在缓存则直接读取
-        val cacheClass = BinaryClass.read("remap/$source", srcVersion) { AsmClassLoader.createNewClass(source, it) }
-        if (cacheClass != null) return cacheClass
+        val (cacheClass, cost) = execution { BinaryCache.read("remap/$source", srcVersion) { AsmClassLoader.createNewClass(source, it) } }
+        if (cacheClass != null) {
+            debug("[AsmClassTranslation] 从缓存中加载 $source，用时 $cost 毫秒。")
+            return cacheClass
+        }
         // 转译
-        val classReader = ClassReader(bytes)
-        val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-        // 若当前运行环境为 Paper 时使用新版转换器
-        val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
-            // 若转译对象为 TabooLib 类，需要特殊处理
-            if (source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
+        val (newClass, cost2) = execution {
+            val classReader = ClassReader(bytes)
+            val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
+            // 若当前运行环境为 Paper 时使用新版转换器
+            val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
+                // 若转译对象为 TabooLib 类，需要特殊处理
+                if (source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
+            }
+            // 使用旧版本转译器
+            else {
+                RemapTranslationLegacy()
+            }
+            classReader.accept(ClassRemapper(classWriter, remapper), 0)
+            val newBytes = classWriter.toByteArray()
+            // 缓存
+            BinaryCache.save("remap/$source", srcVersion) { newBytes }
+            AsmClassLoader.createNewClass(source, newBytes)
         }
-        // 使用旧版本转译器
-        else {
-            RemapTranslationLegacy()
-        }
-        classReader.accept(ClassRemapper(classWriter, remapper), 0)
-        val newBytes = classWriter.toByteArray()
-        // 缓存
-        BinaryClass.save("remap/$source", srcVersion) { newBytes }
-        return AsmClassLoader.createNewClass(source, newBytes)
+        debug("[AsmClassTranslation] 转译 $source，用时 $cost2 毫秒。")
+        return newClass
     }
 }

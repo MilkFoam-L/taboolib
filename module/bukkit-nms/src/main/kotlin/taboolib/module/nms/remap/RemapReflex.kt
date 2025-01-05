@@ -4,6 +4,7 @@ import org.tabooproject.reflex.ReflexRemapper
 import taboolib.common.io.isDevelopmentMode
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
+import taboolib.module.nms.Exchanges
 import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.ConcurrentHashMap
 
@@ -21,9 +22,9 @@ abstract class RemapReflex : ReflexRemapper {
     val major = MinecraftVersion.major
 
     // 缓存信息
-    val fieldRemapCacheMap = ConcurrentHashMap<String, String>()
-    val methodRemapCacheMap = ConcurrentHashMap<String, String>()
-    val descriptorTypeCacheMap = ConcurrentHashMap<String, List<Class<*>>>()
+    val fieldRemapCacheMap = Exchanges.getOrPut("reflex_remap_field_cache") { ConcurrentHashMap<String, String>() }
+    val methodRemapCacheMap = Exchanges.getOrPut("reflex_remap_method_cache") { ConcurrentHashMap<String, String>() }
+    val descriptorTypeCacheMap = Exchanges.getOrPut("reflex_remap_descriptor_type_cache") { ConcurrentHashMap<String, List<Class<*>>>() }
 
     // 映射信息
     val spigotMapping = MinecraftVersion.spigotMapping

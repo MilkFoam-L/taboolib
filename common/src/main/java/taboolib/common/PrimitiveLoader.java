@@ -83,7 +83,7 @@ public class PrimitiveLoader {
      */
     public static void init() throws Throwable {
         // 开发版本
-        PrimitiveIO.debug("Running in development mode.", PrimitiveIO.getRunningFileName());
+        PrimitiveIO.debug("当前以调试模式运行。", PrimitiveIO.getRunningFileName());
         long time = TabooLib.execution(() -> {
             // 基础依赖是否隔离加载
             boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
@@ -100,7 +100,7 @@ public class PrimitiveLoader {
             load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.1.8", IS_ISOLATED_MODE, true, rule());
             load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.1.8", IS_ISOLATED_MODE, true, rule());
         });
-        PrimitiveIO.debug("Base dependencies loaded in {0} ms.", time);
+        PrimitiveIO.debug("基础依赖加载完成，用时 {0} 毫秒。", time);
         // 加载完整模块
         loadAll();
     }
@@ -184,7 +184,7 @@ public class PrimitiveLoader {
                 load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
             }
         });
-        PrimitiveIO.debug("All dependencies loaded in {0} ms.", time);
+        PrimitiveIO.debug("所有依赖加载完成，用时 {0} 毫秒。", time);
     }
 
     /**
@@ -230,7 +230,7 @@ public class PrimitiveLoader {
         try (JarFile jarFile = new JarFile(jar)) {
             JarEntry extra = jarFile.getJarEntry("META-INF/taboolib/extra.properties");
             if (extra != null) {
-                PrimitiveIO.debug("Loading extra properties from " + jar.getName());
+                PrimitiveIO.debug("从 {0} 中加载 extra.properties 配置", jar.getName());
                 Properties extraProps = new Properties();
                 extraProps.load(jarFile.getInputStream(extra));
                 // 获取主类
@@ -243,7 +243,7 @@ public class PrimitiveLoader {
                         Method declaredMethod = mainClass.getDeclaredMethod(mainMethod);
                         declaredMethod.setAccessible(true);
                         declaredMethod.invoke(null);
-                        PrimitiveIO.debug(" = Invoke {0}.{1}()", mainClass.getName(), mainMethod);
+                        PrimitiveIO.debug(" = 调用 {0}.{1}()", mainClass.getName(), mainMethod);
                     }
                 }
             }

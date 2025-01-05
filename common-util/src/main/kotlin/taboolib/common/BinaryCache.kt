@@ -1,10 +1,18 @@
-package taboolib.common.io
+package taboolib.common
 
-import taboolib.common.PrimitiveIO
+import taboolib.common.io.digest
+import taboolib.common.io.groupId
+import taboolib.common.io.newFile
 import taboolib.common.util.t
 import java.io.File
 
-object BinaryClass {
+object BinaryCache {
+
+    val primarySrcVersion = try {
+        File(BinaryCache::class.java.getProtectionDomain().codeSource.location.file).digest()
+    } catch (ex: Throwable) {
+        "unknown"
+    }
 
     fun <T> read(name: String, version: String, block: (bytes: ByteArray) -> T): T? {
         // 是否有缓存文件
@@ -31,6 +39,8 @@ object BinaryClass {
         }
         return null
     }
+
+    fun save(name: String, version: String, bytes: ByteArray) = save(name, version) { bytes }
 
     fun save(name: String, version: String, block: () -> ByteArray) {
         val cacheFile = getCacheFile().resolve("binary/${name}.cache")
@@ -59,7 +69,7 @@ object BinaryClass {
     }
 
     fun getCacheFile(): File {
-        val file = File("cache/taboolib/$groupId")
+        val file = File("cache/taboolib/${groupId}")
         if (!file.exists()) {
             file.mkdirs()
         }
