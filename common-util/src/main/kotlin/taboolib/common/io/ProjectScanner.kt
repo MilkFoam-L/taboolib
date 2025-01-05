@@ -2,6 +2,7 @@ package taboolib.common.io
 
 import org.tabooproject.reflex.LazyClass
 import org.tabooproject.reflex.ReflexClass
+import org.tabooproject.reflex.ReflexClassMap
 import taboolib.common.ClassAppender
 import taboolib.common.PrimitiveIO
 import taboolib.common.TabooLib
@@ -20,7 +21,7 @@ import java.util.jar.JarFile
  */
 val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
     val (map, time) = execution {
-        val map = TabooLib::class.java.protectionDomain.codeSource.location.getClasses()
+        val map = HashMap(TabooLib::class.java.protectionDomain.codeSource.location.getClasses())
         // 额外扫描入口
         System.getProperty("taboolib.scan")?.split(',')?.forEach { name ->
             if (name.isEmpty()) return@forEach
@@ -128,7 +129,7 @@ var extraLoadedResources = ConcurrentHashMap<String, ByteArray>()
 /**
  * 获取 URL 下的所有类
  */
-fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): MutableMap<String, ReflexClass> {
+fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): Map<String, ReflexClass> {
     val classes = ConcurrentHashMap<String, ReflexClass>()
     val srcFile = try {
         File(toURI())
@@ -139,6 +140,15 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
     }
     // 是文件
     if (srcFile.isFile) {
+        val srcVersion = srcFile.digest()
+        // 从二进制缓存中读取
+        val classMap = BinaryClass.read(srcFile.nameWithoutExtension, srcVersion) {
+            val classMap = ReflexClassMap.deserializeFromBytes(it) { Class.forName(it, false, classLoader) }
+            ReflexClass.reflexClassCacheMap += classMap
+            classMap
+        }
+        if (classMap != null) return classMap
+        // 从文件中解析
         JarFile(srcFile).use { jar ->
             jar.stream()
                 .parallel()
@@ -149,6 +159,8 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
                     classes[className] = ReflexClass.of(lc, jar.getInputStream(it))
                 }
         }
+        // 保存
+        BinaryClass.save(srcFile.nameWithoutExtension, srcVersion) { ReflexClassMap.serializeToBytes(classes) }
     }
     // 是目录
     else {

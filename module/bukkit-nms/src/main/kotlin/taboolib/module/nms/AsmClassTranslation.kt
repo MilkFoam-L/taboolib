@@ -4,7 +4,10 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper
 import taboolib.common.TabooLib
+import taboolib.common.io.BinaryClass
+import taboolib.common.io.digest
 import taboolib.common.io.taboolibPath
+import taboolib.common.util.t
 import taboolib.module.nms.remap.RemapTranslation
 import taboolib.module.nms.remap.RemapTranslationLegacy
 import taboolib.module.nms.remap.RemapTranslationTabooLib
@@ -37,9 +40,20 @@ class AsmClassTranslation(val source: String) {
             inputStream = TabooLib::class.java.classLoader.getResourceAsStream(source.replace('.', '/') + ".class")
         }
         if (inputStream == null) {
-            error("Cannot find class: $source")
+            error(
+                """
+                    没有找到将被转译的类 $source
+                    No class found to be translated $source
+                """.t()
+            )
         }
-        val classReader = ClassReader(inputStream)
+        val bytes = inputStream.readBytes()
+        val srcVersion = bytes.digest()
+        // 若存在缓存则直接读取
+        val cacheClass = BinaryClass.read("remap/$source", srcVersion) { AsmClassLoader.createNewClass(source, it) }
+        if (cacheClass != null) return cacheClass
+        // 转译
+        val classReader = ClassReader(bytes)
         val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
         // 若当前运行环境为 Paper 时使用新版转换器
         val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
@@ -51,6 +65,9 @@ class AsmClassTranslation(val source: String) {
             RemapTranslationLegacy()
         }
         classReader.accept(ClassRemapper(classWriter, remapper), 0)
-        return AsmClassLoader.createNewClass(source, classWriter.toByteArray())
+        val newBytes = classWriter.toByteArray()
+        // 缓存
+        BinaryClass.save("remap/$source", srcVersion) { newBytes }
+        return AsmClassLoader.createNewClass(source, newBytes)
     }
 }
