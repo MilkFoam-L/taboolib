@@ -15,6 +15,7 @@ import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.getOpenContainers
 import taboolib.common.platform.function.pluginId
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.bukkit.Exchanges
 
 /**
  * @author 坏黑

@@ -4,8 +4,8 @@ import org.tabooproject.reflex.ReflexRemapper
 import taboolib.common.io.isDevelopmentMode
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
-import taboolib.module.nms.Exchanges
 import taboolib.module.nms.MinecraftVersion
+import taboolib.platform.bukkit.Exchanges
 import java.util.concurrent.ConcurrentHashMap
 
 /**
