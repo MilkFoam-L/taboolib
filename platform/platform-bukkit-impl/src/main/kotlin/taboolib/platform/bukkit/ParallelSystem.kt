@@ -82,11 +82,11 @@ object ParallelSystem : ClassVisitor(0) {
 
     fun registerTask(id: String, dependOn: List<String>, lifeCycle: LifeCycle, block: () -> Unit): CompletableFuture<Unit> {
         // 不允许在 INIT 之后注册
-        if (TabooLib.getCurrentLifeCycle() > LifeCycle.INIT) {
+        if (TabooLib.getCurrentLifeCycle() > lifeCycle) {
             error(
                 """
-                    并行任务必须在 INIT 或更早的生命周期下注册。
-                    Parallel task must be registered in INIT or earlier life cycle.
+                    并行任务必须在 ${lifeCycle.name} 或更早的生命周期下注册。
+                    Parallel task must be registered in ${lifeCycle.name} or earlier life cycle.
                 """.t()
             )
         }
@@ -156,8 +156,8 @@ object ParallelSystem : ClassVisitor(0) {
             val id = annotation.property("id", "").ifEmpty { "anonymous_${UUID.randomUUID()}" }
             val dependOn = annotation.list<String>("dependOn")
             val lifeCycle = annotation.enum("lifeCycle", LifeCycle.ENABLE)
-            val obj = findInstance(owner)
             registerTask(id, dependOn, lifeCycle) {
+                val obj = findInstance(owner)
                 if (obj == null) {
                     method.invokeStatic()
                 } else {
