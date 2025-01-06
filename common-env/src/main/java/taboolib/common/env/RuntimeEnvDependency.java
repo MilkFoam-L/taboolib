@@ -44,6 +44,12 @@ public class RuntimeEnvDependency {
         } catch (ClassNotFoundException e) {
             isAetherFound = false;
         }
+        // Mohist直接不用Aether
+        try {
+            Class.forName("com.mohistmc.MohistMC");
+            isAetherFound = false;
+        }catch (ClassNotFoundException ignored){
+        }
     }
 
     public List<ParsedDependency> getDependency(@NotNull ReflexClass clazz) {
