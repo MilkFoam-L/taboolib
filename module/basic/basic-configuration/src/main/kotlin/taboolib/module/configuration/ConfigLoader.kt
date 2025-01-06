@@ -70,9 +70,9 @@ class ConfigLoader : ClassVisitor(1) {
                 field.set(findInstance(owner), conf)
                 // 自动重载
                 if (configAnno.property("autoReload", false)) {
-                    PrimitiveIO.debug("Listening config file changes: ${file.absolutePath}")
+                    PrimitiveIO.debug("正在监听文件变更: ${file.absolutePath}")
                     FileWatcher.INSTANCE.addSimpleListener(file) {
-                        PrimitiveIO.debug("Config file changed: ${file.absolutePath}")
+                        PrimitiveIO.debug("文件变更: ${file.absolutePath}")
                         if (file.exists()) {
                             conf.loadFromFile(file)
                         }
@@ -85,7 +85,7 @@ class ConfigLoader : ClassVisitor(1) {
                 }
                 files[name] = configFile
                 // 开发模式
-                PrimitiveIO.debug("Loaded config file: ${file.absolutePath}")
+                PrimitiveIO.debug("加载配置文件: ${file.absolutePath}")
             }
         }
     }
