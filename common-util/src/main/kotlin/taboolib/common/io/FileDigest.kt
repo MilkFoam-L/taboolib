@@ -2,6 +2,7 @@ package taboolib.common.io
 
 import java.io.File
 import java.math.BigInteger
+import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
@@ -40,7 +41,8 @@ fun File.digest(algorithm: String = "sha-1"): String {
         val digest = MessageDigest.getInstance(algorithm)
         val buffer = ByteBuffer.allocateDirect(1024 * 1024)
         while (channel.read(buffer) != -1) {
-            buffer.flip()
+            // 显式转换为 Buffer 类型以确保 Java 8 兼容性
+            buffer.flip() as Buffer
             digest.update(buffer)
             buffer.clear()
         }
