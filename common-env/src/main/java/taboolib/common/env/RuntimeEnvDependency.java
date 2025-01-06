@@ -44,7 +44,7 @@ public class RuntimeEnvDependency {
         } catch (ClassNotFoundException e) {
             isAetherFound = false;
         }
-        // Mohist直接不用Aether
+        // Mohist 直接不用 Aether
         try {
             Class.forName("com.mohistmc.MohistMC");
             isAetherFound = false;
