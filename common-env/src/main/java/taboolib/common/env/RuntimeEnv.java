@@ -35,7 +35,7 @@ public class RuntimeEnv {
      * 用于初始化 Kotlin 环境
      */
     static void init() {
-        PrimitiveIO.debug("RuntimeEnv loaded in {0}ms.", TabooLib.execution(() -> {
+        PrimitiveIO.debug("RuntimeEnv 加载完成，用时 {0} 毫秒。", TabooLib.execution(() -> {
             List<JarRelocation> rel = new ArrayList<>();
             boolean loadKotlin = !KOTLIN_VERSION.equals("null");
             boolean loadKotlinCoroutines = !KOTLIN_COROUTINES_VERSION.equals("null");

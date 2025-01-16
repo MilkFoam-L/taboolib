@@ -52,13 +52,24 @@ public class FileWatcher {
     public FileWatcher(int interval) {
         try {
             this.watchService = FileSystems.getDefault().newWatchService();
-            this.executorService.scheduleAtFixedRate(() -> fileListenerMap.forEach((file, listener) -> {
-                try {
-                    listener.poll();
-                } catch (Throwable ex) {
-                    ex.printStackTrace();
+            this.executorService.scheduleAtFixedRate(() -> {
+                WatchKey key;
+                while ((key = watchService.poll()) != null) {
+                    key.pollEvents().forEach(event -> {
+                        if (event.context() instanceof Path) {
+                            Path changedPath = (Path) event.context();
+                            fileListenerMap.forEach((file, listener) -> {
+                                try {
+                                    listener.handleEvent(changedPath);
+                                } catch (Throwable ex) {
+                                    ex.printStackTrace();
+                                }
+                            });
+                        }
+                    });
+                    key.reset();
                 }
-            }), 1000, interval, TimeUnit.MILLISECONDS);
+            }, 1000, interval, TimeUnit.MILLISECONDS);
             // 注册关闭回调
             TabooLib.registerLifeCycleTask(LifeCycle.DISABLE, 0, this::release);
         } catch (IOException e) {
@@ -142,27 +153,22 @@ public class FileWatcher {
             );
         }
 
-        public void poll() {
-            watchKey.pollEvents().forEach(event -> {
-                if (event.context() instanceof Path) {
-                    Path path = (Path) event.context();
-                    Path fullPath = file.getParentFile().toPath().resolve(path);
-                    // 监听目录
-                    if (file.isDirectory()) {
-                        try {
-                            // 使用 relativize 检查路径关系，更加准确
-                            file.toPath().relativize(fullPath);
-                            callback.accept(fullPath.toFile());
-                        } catch (IllegalArgumentException ignored) {
-                            // 如果不是子路径，会抛出异常，直接忽略
-                        }
-                    }
-                    // 监听文件
-                    else if (isSameFile(fullPath, file.toPath())) {
-                        callback.accept(fullPath.toFile());  // 使用完整路径
-                    }
+        public void handleEvent(Path changedPath) {
+            Path fullPath = file.getParentFile().toPath().resolve(changedPath);
+            // 监听目录
+            if (file.isDirectory()) {
+                try {
+                    // 使用 relativize 检查路径关系，更加准确
+                    file.toPath().relativize(fullPath);
+                    callback.accept(fullPath.toFile());
+                } catch (IllegalArgumentException ignored) {
+                    // 如果不是子路径，会抛出异常，直接忽略
                 }
-            });
+            }
+            // 监听文件
+            else if (isSameFile(fullPath, file.toPath())) {
+                callback.accept(fullPath.toFile());
+            }
         }
 
         public boolean isSameFile(Path path1, Path path2) {
