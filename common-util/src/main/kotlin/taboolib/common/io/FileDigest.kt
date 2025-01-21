@@ -42,9 +42,9 @@ fun File.digest(algorithm: String = "sha-1"): String {
         val buffer = ByteBuffer.allocateDirect(1024 * 1024)
         while (channel.read(buffer) != -1) {
             // 显式转换为 Buffer 类型以确保 Java 8 兼容性
-            buffer.flip() as Buffer
+            (buffer as Buffer).flip()
             digest.update(buffer)
-            buffer.clear()
+            (buffer as Buffer).clear()
         }
         BigInteger(1, digest.digest()).toString(16)
     }
