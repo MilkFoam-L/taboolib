@@ -9,6 +9,8 @@ import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.util.t
@@ -70,6 +72,7 @@ import java.util.concurrent.Executors
  */
 @Awake
 @Inject
+@PlatformSide(Platform.BUKKIT)
 object ParallelSystem : ClassVisitor(0) {
 
     val localTaskMap = ConcurrentHashMap<String, Task>()
