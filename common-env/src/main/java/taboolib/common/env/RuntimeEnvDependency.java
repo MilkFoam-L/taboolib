@@ -225,11 +225,9 @@ public class RuntimeEnvDependency {
 
     /**
      * 从本地文件中加载依赖
-     * 由 Gradle 插件生成在 "META-INF/taboolib/dependency.json" 文件中
      */
     @SuppressWarnings("deprecation")
-    public void loadFromLocalFile() throws Throwable {
-        URL url = RuntimeEnvDependency.class.getClassLoader().getResource("META-INF/taboolib/dependency.json");
+    public void loadFromLocalFile(URL url) throws Throwable {
         if (url == null) {
             return;
         }
