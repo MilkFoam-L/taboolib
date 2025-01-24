@@ -68,7 +68,8 @@ public class RuntimeEnv {
             }
             // 加载本地文件定义的依赖
             try {
-                ENV_DEPENDENCY.loadFromLocalFile();
+                URL url = RuntimeEnvDependency.class.getClassLoader().getResource("META-INF/taboolib/dependency.json");
+                ENV_DEPENDENCY.loadFromLocalFile(url);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
