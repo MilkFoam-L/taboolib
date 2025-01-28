@@ -18,7 +18,7 @@ import taboolib.module.configuration.util.CommentedList
  * @author mac
  * @since 2021/11/21 11:00 下午
  */
-open class ConfigSection(var root: Config, override val name: String = "", override val parent: ConfigurationSection? = null) : ConfigurationSection {
+open class ConfigSection(var root: Config, override var name: String = "", override val parent: ConfigurationSection? = null) : ConfigurationSection {
 
     private val configType = Type.getType(root.configFormat())
 
