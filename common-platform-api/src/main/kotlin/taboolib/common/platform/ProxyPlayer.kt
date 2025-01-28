@@ -317,7 +317,7 @@ interface ProxyPlayer : ProxyCommandSender {
      * @param speed 速度
      * @param data 数据
      */
-    fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?)
+    fun sendParticle(particle: String, location: Location, offset: Vector, count: Int, speed: Double, data: Any?)
 
     /**
      * 传送

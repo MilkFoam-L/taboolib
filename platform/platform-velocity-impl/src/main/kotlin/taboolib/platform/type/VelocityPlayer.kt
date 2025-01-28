@@ -9,7 +9,6 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.title.Title
 import taboolib.common.Inject
 import taboolib.common.platform.ProxyGameMode
-import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.onlinePlayers
@@ -19,7 +18,6 @@ import taboolib.platform.VelocityPlugin
 import java.net.InetSocketAddress
 import java.time.Duration
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -311,7 +309,7 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(GsonComponentSerializer.gson().deserialize(message))
     }
 
-    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+    override fun sendParticle(particle: String, location: Location, offset: Vector, count: Int, speed: Double, data: Any?) {
         error("Unsupported")
     }
 

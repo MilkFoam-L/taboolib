@@ -8,19 +8,18 @@ import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.ItemStack
-import org.bukkit.material.MaterialData
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.platform.ProxyGameMode
-import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
+import taboolib.common.util.orNull
+import taboolib.library.xseries.XParticle
+import taboolib.library.xseries.XSound
 import taboolib.platform.util.LegacyPlayer
 import java.net.InetSocketAddress
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -292,7 +291,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
             player.stopSound(sound)
             return
         }
-        player.playSound(location.toBukkitLocation(), Sound.valueOf(sound), volume, pitch)
+        XSound.of(sound).ifPresent { it.play(location.toBukkitLocation(), volume, pitch) }
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
@@ -327,67 +326,9 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(message)
     }
 
-    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
-        // 获取粒子
-        val bukkitType = Particle.values().find { it.name == particle.name || it.name in particle.aliases } ?: error("Unsupported particle ${particle.name}")
-
-        // 获取粒子数据
-        val bukkitData: Any? = when (data) {
-            // 渐变红石
-            is ProxyParticle.DustTransitionData -> {
-                Particle.DustTransition(
-                    Color.fromRGB(data.color.red, data.color.green, data.color.blue),
-                    Color.fromRGB(data.toColor.red, data.toColor.blue, data.toColor.green),
-                    data.size
-                )
-            }
-            // 红石
-            is ProxyParticle.DustData -> {
-                Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
-            }
-            // 物品
-            is ProxyParticle.ItemData -> {
-                val item = ItemStack(Material.valueOf(data.material))
-                val itemMeta = item.itemMeta!!
-                itemMeta.setDisplayName(data.name)
-                itemMeta.lore = data.lore
-                try {
-                    itemMeta.setCustomModelData(data.customModelData)
-                } catch (ignored: NoSuchMethodError) {
-                }
-                item.itemMeta = itemMeta
-                if (data.data != 0) {
-                    item.durability = data.data.toShort()
-                }
-                item
-            }
-            // 方块
-            is ProxyParticle.BlockData -> {
-                if (bukkitType.dataType == MaterialData::class.java) {
-                    MaterialData(Material.valueOf(data.material), data.data.toByte())
-                } else {
-                    Material.valueOf(data.material).createBlockData()
-                }
-            }
-            // 震动（不知道怎么翻译，来自 1.17+）
-            is ProxyParticle.VibrationData -> {
-                Vibration(
-                    data.origin.toBukkitLocation(), when (val destination = data.destination) {
-                        // 坐标
-                        is ProxyParticle.VibrationData.LocationDestination -> {
-                            Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
-                        }
-                        // 实体
-                        is ProxyParticle.VibrationData.EntityDestination -> {
-                            Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
-                        }
-                    },
-                    data.arrivalTime
-                )
-            }
-            else -> null
-        }
-        player.spawnParticle(bukkitType, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, bukkitData)
+    override fun sendParticle(particle: String, location: Location, offset: Vector, count: Int, speed: Double, data: Any?) {
+        val bukkitType = XParticle.of(particle).orNull()?.get() ?: return
+        player.spawnParticle(bukkitType, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, data)
     }
 
     override fun performCommand(command: String): Boolean {

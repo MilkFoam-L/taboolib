@@ -31,9 +31,9 @@ import org.bukkit.block.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -56,7 +56,10 @@ import java.util.*;
 public final class XBlock {
     /**
      * This list contains both block and item version of the same material.
+     *
+     * @deprecated Use {@link XTag#CROPS} instead.
      */
+    @Deprecated
     public static final Set<XMaterial> CROPS = Collections.unmodifiableSet(EnumSet.of(
             XMaterial.CARROT, XMaterial.CARROTS, XMaterial.POTATO, XMaterial.POTATOES,
             XMaterial.NETHER_WART, XMaterial.PUMPKIN_SEEDS, XMaterial.WHEAT_SEEDS, XMaterial.WHEAT,
@@ -66,6 +69,10 @@ public final class XBlock {
             XMaterial.MELON_STEM, XMaterial.PUMPKIN_STEM, XMaterial.COCOA, XMaterial.COCOA_BEANS
 
     ));
+    /**
+     * @deprecated Use {@link XTag#DANGEROUS_BLOCKS} instead.
+     */
+    @Deprecated
     public static final Set<XMaterial> DANGEROUS = Collections.unmodifiableSet(EnumSet.of(
             XMaterial.MAGMA_BLOCK, XMaterial.LAVA, XMaterial.CAMPFIRE, XMaterial.FIRE, XMaterial.SOUL_FIRE
     ));
@@ -141,7 +148,9 @@ public final class XBlock {
      *
      * @param material the material to check.
      * @return true if this material is a crop, otherwise false.
+     * @deprecated Use {@link XTag#CROPS} instead.
      */
+    @Deprecated
     public static boolean isCrop(XMaterial material) {
         return CROPS.contains(material);
     }
@@ -151,7 +160,9 @@ public final class XBlock {
      *
      * @param material the material to check.
      * @return true if this material is dangerous, otherwise false.
+     * @deprecated Use {@link XTag#DANGEROUS_BLOCKS} instead.
      */
+    @Deprecated
     public static boolean isDangerous(XMaterial material) {
         return DANGEROUS.contains(material);
     }
@@ -176,35 +187,60 @@ public final class XBlock {
     }
 
     public static boolean isCake(@Nullable Material material) {
-        return material == Material.CAKE || material == BlockMaterial.CAKE_BLOCK.material;
+        if (!ISFLAT) {
+            return material == BlockMaterial.CAKE_BLOCK.material;
+        }
+        return material == Material.CAKE;
     }
 
     public static boolean isWheat(@Nullable Material material) {
-        return material == Material.WHEAT || material == BlockMaterial.CROPS.material;
+        if (!ISFLAT) {
+            return material == BlockMaterial.CROPS.material;
+        }
+        return material == Material.WHEAT;
     }
 
     public static boolean isSugarCane(@Nullable Material material) {
-        return material == Material.SUGAR_CANE || material == BlockMaterial.SUGAR_CANE_BLOCK.material;
+        if (!ISFLAT) {
+            return material == BlockMaterial.SUGAR_CANE_BLOCK.material;
+        }
+        return material == Material.SUGAR_CANE;
     }
 
     public static boolean isBeetroot(@Nullable Material material) {
-        return material == Material.BEETROOT || material == Material.BEETROOTS || material == BlockMaterial.BEETROOT_BLOCK.material;
+        if (!ISFLAT) {
+            // Avoid false positive in 1.8, where BEETROOT_BLOCK doesn't exist.
+            return material != null && material == BlockMaterial.BEETROOT_BLOCK.material;
+        }
+        return material == Material.BEETROOTS;
     }
 
     public static boolean isNetherWart(@Nullable Material material) {
-        return material == Material.NETHER_WART || material == BlockMaterial.NETHER_WARTS.material;
+        if (!ISFLAT) {
+            return material == BlockMaterial.NETHER_WARTS.material;
+        }
+        return material == Material.NETHER_WART;
     }
 
     public static boolean isCarrot(@Nullable Material material) {
-        return material == Material.CARROT || material == Material.CARROTS;
+        if (!ISFLAT) {
+            return material == Material.CARROT;
+        }
+        return material == Material.CARROTS;
     }
 
     public static boolean isMelon(@Nullable Material material) {
-        return material == Material.MELON || material == Material.MELON_SLICE || material == BlockMaterial.MELON_BLOCK.material;
+        if (!ISFLAT) {
+            return material == BlockMaterial.MELON_BLOCK.material;
+        }
+        return material == Material.MELON;
     }
 
     public static boolean isPotato(@Nullable Material material) {
-        return material == Material.POTATO || material == Material.POTATOES;
+        if (!ISFLAT) {
+            return material == Material.POTATO;
+        }
+        return material == Material.POTATOES;
     }
 
     public static BlockFace getDirection(Block block) {
@@ -242,13 +278,13 @@ public final class XBlock {
         return false;
     }
 
-    public static boolean setType(@Nonnull Block block, @Nullable XMaterial material, boolean applyPhysics) {
+    public static boolean setType(@NotNull Block block, @Nullable XMaterial material, boolean applyPhysics) {
         Objects.requireNonNull(block, "Cannot set type of null block");
         if (material == null) material = XMaterial.AIR;
         XMaterial smartConversion = ITEM_TO_BLOCK.get(material);
         if (smartConversion != null) material = smartConversion;
 
-        Material parsedMat = material.parseMaterial();
+        Material parsedMat = material.get();
         if (parsedMat == null) return false;
 
         String parsedName = parsedMat.name();
@@ -406,7 +442,7 @@ public final class XBlock {
         }
     }
 
-    public static boolean setType(@Nonnull Block block, @Nullable XMaterial material) {
+    public static boolean setType(@NotNull Block block, @Nullable XMaterial material) {
         return setType(block, material, true);
     }
 

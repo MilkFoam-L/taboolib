@@ -21,25 +21,21 @@
  */
 package taboolib.library.xseries;
 
-import com.google.common.base.Enums;
-import com.google.common.base.Strings;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Registry;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Unmodifiable;
 import taboolib.library.xseries.base.XModule;
 import taboolib.library.xseries.base.XRegistry;
 import taboolib.library.xseries.base.annotations.XChange;
 import taboolib.library.xseries.base.annotations.XInfo;
 import taboolib.library.xseries.base.annotations.XMerge;
+import com.google.common.base.Enums;
+import com.google.common.base.Strings;
+import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -62,7 +58,7 @@ import java.util.stream.Collectors;
  * play command: <a href="https://minecraft.wiki/w/Commands/play">minecraft.wiki/w</a>
  *
  * @author Crypto Morin
- * @version 10.2.0
+ * @version 11.0.0
  * @see Sound
  */
 public final class XSound extends XModule<XSound, Sound> {
@@ -1775,6 +1771,35 @@ public final class XSound extends XModule<XSound, Sound> {
                     "(?<sound>[\\w$_]+|" + NAMESPACED_SOUND_PATTERN.pattern() + ")\\s*" +
                     "(?:,\\s*(?<volume>[+-]?(?:\\d*\\.)?\\d+)\\s*(?:,\\s*(?<pitch>[+-]?(?:\\d*\\.)?\\d+))?)?\\s*");
 
+    public enum Category {
+        MASTER, MUSIC, RECORDS, WEATHER, BLOCKS,
+        HOSTILE, NEUTRAL, PLAYERS, AMBIENT, VOICE;
+
+        private final Object bukkitObject;
+
+        public boolean isSupported() {
+            return this.bukkitObject != null;
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <T> T cast(Object any) {
+            return (T) any;
+        }
+
+        Category() {
+            Object sc = null;
+            try {
+                sc = Enums.getIfPresent(cast(Class.forName("org.bukkit.SoundCategory")), this.name()).orNull();
+            } catch (ClassNotFoundException ignored) {
+            }
+            this.bukkitObject = sc;
+        }
+
+        public Object getBukkitObject() {
+            return bukkitObject;
+        }
+    }
+
     private XSound(Sound sound, String[] names) {
         super(sound, names);
     }
@@ -1791,9 +1816,9 @@ public final class XSound extends XModule<XSound, Sound> {
      * @since 1.0.0
      * @deprecated use {@link #of(String)} instead.
      */
-    @Nonnull
+    @NotNull
     @Deprecated
-    public static Optional<XSound> matchXSound(@Nonnull String sound) {
+    public static Optional<XSound> matchXSound(@NotNull String sound) {
         return REGISTRY.getByName(sound);
     }
 
@@ -1806,19 +1831,15 @@ public final class XSound extends XModule<XSound, Sound> {
      * @since 2.0.0
      * @deprecated use {@link #of(Sound)} instead.
      */
-    @Nonnull
+    @NotNull
     @Deprecated
-    public static XSound matchXSound(@Nonnull Sound sound) {
+    public static XSound matchXSound(@NotNull Sound sound) {
         return REGISTRY.getByBukkitForm(sound);
     }
 
-    public static XSound of(@Nonnull Sound bukkit) {
-        return REGISTRY.getByBukkitForm(bukkit);
-    }
+    public static XSound of(@NotNull Sound bukkit) {return REGISTRY.getByBukkitForm(bukkit);}
 
-    public static Optional<XSound> of(@Nonnull String bukkit) {
-        return REGISTRY.getByName(bukkit);
-    }
+    public static Optional<XSound> of(@NotNull String bukkit) {return REGISTRY.getByName(bukkit);}
 
     /**
      * Use {@link #getValues()} instead.
@@ -1828,13 +1849,13 @@ public final class XSound extends XModule<XSound, Sound> {
         return REGISTRY.values();
     }
 
-    @Nonnull
+    @NotNull
     @Unmodifiable
     public static Collection<XSound> getValues() {
         return REGISTRY.getValues();
     }
 
-    private static List<String> split(@Nonnull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
+    private static List<String> split(@NotNull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
         List<String> list = new ArrayList<>(4);
         boolean match = false, lastMatch = false;
         int len = str.length();
@@ -2009,7 +2030,7 @@ public final class XSound extends XModule<XSound, Sound> {
      * @see #stopSound(Player)
      * @since 2.0.0
      */
-    public static void stopMusic(@Nonnull Player player) {
+    public static void stopMusic(@NotNull Player player) {
         Objects.requireNonNull(player, "Cannot stop playing musics from null player");
         for (XSound music : MUSIC) {
             Sound sound = music.get();
@@ -2037,7 +2058,7 @@ public final class XSound extends XModule<XSound, Sound> {
      * @see #stopMusic(Player)
      * @since 2.0.0
      */
-    public void stopSound(@Nonnull Player player) {
+    public void stopSound(@NotNull Player player) {
         Objects.requireNonNull(player, "Cannot stop playing sound from null player");
         Sound sound = this.get();
         if (sound != null) player.stopSound(sound);
@@ -2049,7 +2070,7 @@ public final class XSound extends XModule<XSound, Sound> {
      * @param entity the entity to play the sound to.
      * @since 1.0.0
      */
-    public void play(@Nonnull Entity entity) {
+    public void play(@NotNull Entity entity) {
         Objects.requireNonNull(entity, "Cannot play sound for null entity");
         SoundPlayer soundPlayer = this.record().soundPlayer();
         if (entity instanceof Player) {
@@ -2068,12 +2089,12 @@ public final class XSound extends XModule<XSound, Sound> {
      * @param location the location to play the sound in.
      * @since 2.0.0
      */
-    public void play(@Nonnull Location location) {
+    public void play(@NotNull Location location) {
         Objects.requireNonNull(location, "Cannot play sound at null location");
         this.record().soundPlayer().atLocation(location).play();
     }
 
-    public void play(@Nonnull Entity entity, float volume, float pitch) {
+    public void play(@NotNull Entity entity, float volume, float pitch) {
         if (!(entity instanceof Player)) {
             Location location;
             if (entity instanceof LivingEntity) {
@@ -2094,7 +2115,7 @@ public final class XSound extends XModule<XSound, Sound> {
                 .play();
     }
 
-    public void play(@Nonnull Location location, float volume, float pitch) {
+    public void play(@NotNull Location location, float volume, float pitch) {
         this.record()
                 .withVolume(volume)
                 .withPitch(pitch)
@@ -2108,35 +2129,6 @@ public final class XSound extends XModule<XSound, Sound> {
      */
     public Record record() {
         return new Record().withSound(this);
-    }
-
-    public enum Category {
-        MASTER, MUSIC, RECORDS, WEATHER, BLOCKS,
-        HOSTILE, NEUTRAL, PLAYERS, AMBIENT, VOICE;
-
-        private final Object bukkitObject;
-
-        Category() {
-            Object sc = null;
-            try {
-                sc = Enums.getIfPresent(cast(Class.forName("org.bukkit.SoundCategory")), this.name()).orNull();
-            } catch (ClassNotFoundException ignored) {
-            }
-            this.bukkitObject = sc;
-        }
-
-        @SuppressWarnings("unchecked")
-        private static <T> T cast(Object any) {
-            return (T) any;
-        }
-
-        public boolean isSupported() {
-            return this.bukkitObject != null;
-        }
-
-        public Object getBukkitObject() {
-            return bukkitObject;
-        }
     }
 
     public static final class SoundPlayer {
@@ -2173,46 +2165,6 @@ public final class XSound extends XModule<XSound, Sound> {
 
         public SoundPlayer(Record record) {
             withRecord(record);
-        }
-
-        /**
-         * Gets a list of players that can hear this sound at the given location and volume.
-         * This method pretty much uses the default algorithm used by Bukkit.
-         *
-         * @param location The location which the sound is going to be played.
-         * @param volume   The volume of the sound being played. Also see {@link Record#volume}
-         */
-        @Nonnull
-        public static Collection<Player> getHearingPlayers(Location location, double volume) {
-            // Increase the amount of blocks for volumes higher than 1
-            volume = volume > 1.0F ? (16.0F * volume) : 16.0;
-            double powerVolume = volume * volume;
-
-            List<Player> playersInWorld = location.getWorld().getPlayers();
-            List<Player> hearing = new ArrayList<>(playersInWorld.size());
-
-            double x = location.getX();
-            double y = location.getY();
-            double z = location.getZ();
-
-            for (Player player : playersInWorld) {
-                Location loc = player.getLocation();
-                double deltaX = x - loc.getX();
-                double deltaY = y - loc.getY();
-                double deltaZ = z - loc.getZ();
-
-                double length = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
-                if (length < powerVolume) hearing.add(player);
-            }
-
-            return hearing;
-        }
-
-        private static <A, R> R toOnlinePlayers(Collection<UUID> players, Collector<Player, A, R> collector) {
-            return players.stream()
-                    .map(Bukkit::getPlayer)
-                    .filter(Objects::nonNull)
-                    .collect(collector);
         }
 
         public SoundPlayer withRecord(Record record) {
@@ -2271,6 +2223,39 @@ public final class XSound extends XModule<XSound, Sound> {
         }
 
         /**
+         * Gets a list of players that can hear this sound at the given location and volume.
+         * This method pretty much uses the default algorithm used by Bukkit.
+         *
+         * @param location The location which the sound is going to be played.
+         * @param volume   The volume of the sound being played. Also see {@link Record#volume}
+         */
+        @NotNull
+        public static Collection<Player> getHearingPlayers(Location location, double volume) {
+            // Increase the amount of blocks for volumes higher than 1
+            volume = volume > 1.0F ? (16.0F * volume) : 16.0;
+            double powerVolume = volume * volume;
+
+            List<Player> playersInWorld = location.getWorld().getPlayers();
+            List<Player> hearing = new ArrayList<>(playersInWorld.size());
+
+            double x = location.getX();
+            double y = location.getY();
+            double z = location.getZ();
+
+            for (Player player : playersInWorld) {
+                Location loc = player.getLocation();
+                double deltaX = x - loc.getX();
+                double deltaY = y - loc.getY();
+                double deltaZ = z - loc.getZ();
+
+                double length = deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+                if (length < powerVolume) hearing.add(player);
+            }
+
+            return hearing;
+        }
+
+        /**
          * Plays the sound with the given options and updating the player's location.
          *
          * @since 3.0.0
@@ -2300,7 +2285,7 @@ public final class XSound extends XModule<XSound, Sound> {
          * @param updatedLocation the updated location.
          * @since 3.0.0
          */
-        public void play(@Nonnull Location updatedLocation) {
+        public void play(@NotNull Location updatedLocation) {
             Collection<Player> hearing = getHearingPlayers();
             this.heard = hearing.stream().map(Entity::getUniqueId).collect(Collectors.toSet());
 
@@ -2308,7 +2293,14 @@ public final class XSound extends XModule<XSound, Sound> {
             play(hearing, updatedLocation);
         }
 
-        public void play(Collection<Player> players, @Nonnull Location updatedLocation) {
+        private static <A, R> R toOnlinePlayers(Collection<UUID> players, Collector<Player, A, R> collector) {
+            return players.stream()
+                    .map(Bukkit::getPlayer)
+                    .filter(Objects::nonNull)
+                    .collect(collector);
+        }
+
+        public void play(Collection<Player> players, @NotNull Location updatedLocation) {
             Objects.requireNonNull(updatedLocation, "Cannot play sound at null location");
 
             Sound objSound = record.sound instanceof XSound ? ((XSound) record.sound).get() : null;
@@ -2371,7 +2363,7 @@ public final class XSound extends XModule<XSound, Sound> {
 
         private Object sound;
 
-        @Nonnull
+        @NotNull
         private Category category = Category.MASTER;
 
         @Nullable
@@ -2397,7 +2389,7 @@ public final class XSound extends XModule<XSound, Sound> {
             return sound;
         }
 
-        @Nonnull
+        @NotNull
         public Category getCategory() {
             return category;
         }
@@ -2422,7 +2414,7 @@ public final class XSound extends XModule<XSound, Sound> {
             return new SoundPlayer(this);
         }
 
-        public Record withSound(@Nonnull XSound sound) {
+        public Record withSound(@NotNull XSound sound) {
             Objects.requireNonNull(sound, "Cannot play a null sound");
             this.sound = sound;
             return this;
@@ -2433,7 +2425,7 @@ public final class XSound extends XModule<XSound, Sound> {
          * E.g. for {@link #ENTITY_PLAYER_HURT} it'd be {@code minecraft:entity_player_hurt}
          * you can use other namespaces instead of "minecraft" to use sounds from resource packs.
          */
-        public Record withSound(@Nonnull String sound) {
+        public Record withSound(@NotNull String sound) {
             Objects.requireNonNull(sound, "Cannot play a null sound");
             sound = sound.toLowerCase(Locale.ENGLISH);
 

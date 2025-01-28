@@ -32,16 +32,12 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TropicalFish;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
@@ -51,15 +47,16 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.SpawnEgg;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 import org.tabooproject.reflex.AnalyseMode;
 import org.tabooproject.reflex.Reflex;
 import taboolib.library.configuration.ConfigurationSection;
 import taboolib.module.configuration.Configuration;
 import taboolib.module.configuration.Type;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -79,34 +76,37 @@ import static taboolib.library.xseries.XMaterial.supports;
  * <a href="https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/ItemStack.html">ItemStack</a>
  *
  * @author Crypto Morin
- * @version 7.5.1
+ * @version 7.5.2
  * @see XMaterial
  * @see XPotion
  * @see XEnchantment
  * @see ItemStack
  */
-@SuppressWarnings("ALL")
 public final class XItemStack {
-    public static final ItemFlag[] ITEM_FLAGS = ItemFlag.values();
     public static final boolean SUPPORTS_CUSTOM_MODEL_DATA;
 
     /**
      * Because {@link ItemMeta} cannot be applied to {@link Material#AIR}.
      */
     private static final XMaterial DEFAULT_MATERIAL = XMaterial.BARRIER;
-    private static final boolean SUPPORTS_POTION_COLOR;
-    private static final Object REGISTRY_BANNER_PATTERN = supportsRegistry("BANNER_PATTERN");
-    private static final PatternType DEFAULT_PATTERN_TYPE = getPatternType("BASE");
+    private static final boolean SUPPORTS_POTION_COLOR, SUPPORTS_Inventory_getStorageContents;
 
     static {
-        boolean supportsPotionColor = false;
+        boolean supportsPotionColor = false, supportsGetStorageContents = false;
         try {
             Class.forName("org.bukkit.inventory.meta.PotionMeta").getMethod("setColor", Color.class);
             supportsPotionColor = true;
         } catch (Throwable ignored) {
         }
 
+        try {
+            Inventory.class.getDeclaredMethod("getStorageContents");
+            supportsGetStorageContents = true;
+        } catch (NoSuchMethodException ignored) {
+        }
+
         SUPPORTS_POTION_COLOR = supportsPotionColor;
+        SUPPORTS_Inventory_getStorageContents = supportsGetStorageContents;
     }
 
     static {
@@ -126,14 +126,6 @@ public final class XItemStack {
         } catch (Throwable ex) {
             return null;
         }
-//        try {
-//            Class<?> registryClass = XReflection.ofMinecraft().inPackage("org.bukkit").named("Registry").reflect();
-//            return XReflection.of(registryClass)
-//                    .field().asStatic().getter().named(name).returns(registryClass)
-//                    .reflect().invoke();
-//        } catch (Throwable ex) {
-//            return null;
-//        }
     }
 
     @SuppressWarnings("unchecked")
@@ -167,16 +159,7 @@ public final class XItemStack {
         return type;
     }
 
-    @NotNull
-    private static PatternType getPatternType(@Nullable String name) {
-        return getRegistryOrEnum(
-                PatternType.class, REGISTRY_BANNER_PATTERN,
-                name, DEFAULT_PATTERN_TYPE
-        );
-    }
-
-    private XItemStack() {
-    }
+    private XItemStack() {}
 
     private static BlockState safeBlockState(BlockStateMeta meta) {
         try {
@@ -201,7 +184,7 @@ public final class XItemStack {
      * @see #serialize(ItemStack, ConfigurationSection, Function)
      * @since 1.0.0
      */
-    public static void serialize(@Nonnull ItemStack item, @Nonnull ConfigurationSection config) {
+    public static void serialize(@NotNull ItemStack item, @NotNull ConfigurationSection config) {
         serialize(item, config, Function.identity());
     }
 
@@ -215,8 +198,8 @@ public final class XItemStack {
      * @since 7.4.0
      */
     @SuppressWarnings("deprecation")
-    public static void serialize(@Nonnull ItemStack item, @Nonnull ConfigurationSection config,
-                                 @Nonnull Function<String, String> translator) {
+    public static void serialize(@NotNull ItemStack item, @NotNull ConfigurationSection config,
+                                 @NotNull Function<String, String> translator) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
         Objects.requireNonNull(config, "Cannot serialize item from a null configuration section.");
 
@@ -252,7 +235,7 @@ public final class XItemStack {
 
         // Enchantments
         for (Map.Entry<Enchantment, Integer> enchant : meta.getEnchants().entrySet()) {
-            String entry = "enchants." + XEnchantment.matchXEnchantment(enchant.getKey()).name();
+            String entry = "enchants." + XEnchantment.of(enchant.getKey()).name();
             config.set(entry, enchant.getValue());
         }
 
@@ -272,7 +255,7 @@ public final class XItemStack {
                     String path = "attributes." + attribute.getKey().name() + '.';
                     AttributeModifier modifier = attribute.getValue();
 
-                    config.set(path + "id", modifier.getUniqueId().toString());
+                    // config.set(path + "id", modifier.getUniqueId().toString());
                     config.set(path + "name", modifier.getName());
                     config.set(path + "amount", modifier.getAmount());
                     config.set(path + "operation", modifier.getOperation().name());
@@ -299,7 +282,7 @@ public final class XItemStack {
         } else if (meta instanceof EnchantmentStorageMeta) {
             EnchantmentStorageMeta book = (EnchantmentStorageMeta) meta;
             for (Map.Entry<Enchantment, Integer> enchant : book.getStoredEnchants().entrySet()) {
-                String entry = "stored-enchants." + XEnchantment.matchXEnchantment(enchant.getKey()).name();
+                String entry = "stored-enchants." + XEnchantment.of(enchant.getKey()).name();
                 config.set(entry, enchant.getValue());
             }
         } else if (meta instanceof SkullMeta) {
@@ -504,7 +487,7 @@ public final class XItemStack {
      * @param item the ItemStack to serialize.
      * @return a Map containing the serialized ItemStack properties.
      */
-    public static Map<String, Object> serialize(@Nonnull ItemStack item) {
+    public static Map<String, Object> serialize(@NotNull ItemStack item) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
         ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
         serialize(item, config);
@@ -518,8 +501,8 @@ public final class XItemStack {
      * @return a deserialized ItemStack.
      * @since 1.0.0
      */
-    @Nonnull
-    public static ItemStack deserialize(@Nonnull ConfigurationSection config) {
+    @NotNull
+    public static ItemStack deserialize(@NotNull ConfigurationSection config) {
         return edit(DEFAULT_MATERIAL.parseItem(), config, Function.identity(), null);
     }
 
@@ -530,15 +513,15 @@ public final class XItemStack {
      *                       the ItemStack object from.
      * @return a deserialized ItemStack.
      */
-    @Nonnull
-    public static ItemStack deserialize(@Nonnull Map<String, Object> serializedItem) {
+    @NotNull
+    public static ItemStack deserialize(@NotNull Map<String, Object> serializedItem) {
         Objects.requireNonNull(serializedItem, "serializedItem cannot be null.");
         return deserialize(mapToConfigSection(serializedItem));
     }
 
-    @Nonnull
-    public static ItemStack deserialize(@Nonnull ConfigurationSection config,
-                                        @Nonnull Function<String, String> translator) {
+    @NotNull
+    public static ItemStack deserialize(@NotNull ConfigurationSection config,
+                                        @NotNull Function<String, String> translator) {
         return deserialize(config, translator, null);
     }
 
@@ -549,9 +532,9 @@ public final class XItemStack {
      * @return an edited ItemStack.
      * @since 7.2.0
      */
-    @Nonnull
-    public static ItemStack deserialize(@Nonnull ConfigurationSection config,
-                                        @Nonnull Function<String, String> translator,
+    @NotNull
+    public static ItemStack deserialize(@NotNull ConfigurationSection config,
+                                        @NotNull Function<String, String> translator,
                                         @Nullable Consumer<Exception> restart) {
         return edit(DEFAULT_MATERIAL.parseItem(), config, translator, restart);
     }
@@ -565,8 +548,8 @@ public final class XItemStack {
      * @param translator     the translator to use for translating the item's name.
      * @return a deserialized ItemStack.
      */
-    @Nonnull
-    public static ItemStack deserialize(@Nonnull Map<String, Object> serializedItem, @Nonnull Function<String, String> translator) {
+    @NotNull
+    public static ItemStack deserialize(@NotNull Map<String, Object> serializedItem, @NotNull Function<String, String> translator) {
         Objects.requireNonNull(serializedItem, "serializedItem cannot be null.");
         Objects.requireNonNull(translator, "translator cannot be null.");
         return deserialize(mapToConfigSection(serializedItem), translator);
@@ -580,7 +563,7 @@ public final class XItemStack {
         }
     }
 
-    private static List<String> split(@Nonnull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
+    private static List<String> split(@NotNull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
         List<String> list = new ArrayList<>(5);
         boolean match = false, lastMatch = false;
         int len = str.length();
@@ -647,10 +630,10 @@ public final class XItemStack {
      * @since 1.0.0
      */
     @SuppressWarnings("deprecation")
-    @Nonnull
-    public static ItemStack edit(@Nonnull ItemStack item,
-                                 @Nonnull final ConfigurationSection config,
-                                 @Nonnull final Function<String, String> translator,
+    @NotNull
+    public static ItemStack edit(@NotNull ItemStack item,
+                                 @NotNull final ConfigurationSection config,
+                                 @NotNull final Function<String, String> translator,
                                  @Nullable final Consumer<Exception> restart) {
         Objects.requireNonNull(item, "Cannot operate on null ItemStack, considering using an AIR ItemStack instead");
         Objects.requireNonNull(config, "Cannot deserialize item to a null configuration section.");
@@ -689,6 +672,10 @@ public final class XItemStack {
             }
 
             material.setType(item);
+        } else {
+            // Shortcut for more compact configs.
+            String skull = config.getString("skull");
+            if (skull != null) XMaterial.PLAYER_HEAD.setType(item);
         }
 
         // Amount
@@ -701,7 +688,7 @@ public final class XItemStack {
             if (tempMeta == null) {
                 // When AIR is null. Useful for when you just want to use the meta to save data and
                 // set the type later. A simple CraftMetaItem.
-                meta = Bukkit.getItemFactory().getItemMeta(XMaterial.STONE.parseMaterial());
+                meta = Bukkit.getItemFactory().getItemMeta(XMaterial.STONE.get());
             } else {
                 meta = tempMeta;
             }
@@ -736,10 +723,11 @@ public final class XItemStack {
 
             if (patterns != null) {
                 for (String pattern : patterns.getKeys(false)) {
-                    PatternType type = getPatternType(pattern);
-                    DyeColor color = Enums.getIfPresent(DyeColor.class, patterns.getString(pattern).toUpperCase(Locale.ENGLISH)).or(DyeColor.WHITE);
-
-                    banner.addPattern(new Pattern(color, type));
+                    Optional<XPatternType> patternType = XPatternType.of(pattern);
+                    if (patternType.isPresent() && patternType.get().isSupported()) {
+                        DyeColor color = Enums.getIfPresent(DyeColor.class, patterns.getString(pattern).toUpperCase(Locale.ENGLISH)).or(DyeColor.WHITE);
+                        banner.addPattern(new Pattern(color, patternType.get().get()));
+                    }
                 }
             }
         } else if (meta instanceof LeatherArmorMeta) {
@@ -759,7 +747,14 @@ public final class XItemStack {
 
                 String baseType = config.getString("base-type");
                 if (!Strings.isNullOrEmpty(baseType)) {
-                    XPotion.matchXPotion(baseType).ifPresent(x -> potion.setBasePotionType(x.getPotionType()));
+                    PotionType potionType;
+                    try {
+                        potionType = PotionType.valueOf(baseType);
+                    } catch (IllegalArgumentException ex) {
+                        potionType = PotionType.HEALING;
+                    }
+
+                    potion.setBasePotionType(potionType);
                 }
 
                 if (SUPPORTS_POTION_COLOR && config.contains("color")) {
@@ -819,10 +814,11 @@ public final class XItemStack {
 
                 if (patterns != null) {
                     for (String pattern : patterns.getKeys(false)) {
-                        PatternType type = getPatternType(pattern);
-                        DyeColor color = Enums.getIfPresent(DyeColor.class, patterns.getString(pattern).toUpperCase(Locale.ENGLISH)).or(DyeColor.WHITE);
-
-                        banner.addPattern(new Pattern(color, type));
+                        Optional<XPatternType> patternType = XPatternType.of(pattern);
+                        if (patternType.isPresent() && patternType.get().isSupported()) {
+                            DyeColor color = Enums.getIfPresent(DyeColor.class, patterns.getString(pattern).toUpperCase(Locale.ENGLISH)).or(DyeColor.WHITE);
+                            banner.addPattern(new Pattern(color, patternType.get().get()));
+                        }
                     }
 
                     banner.update(true);
@@ -885,8 +881,8 @@ public final class XItemStack {
             if (mapSection != null) {
                 map.setScaling(mapSection.getBoolean("scaling"));
                 if (supports(11)) {
-                    if (mapSection.contains("location")) map.setLocationName(mapSection.getString("location"));
-                    if (mapSection.contains("color")) {
+                    if (mapSection.isSet("location")) map.setLocationName(mapSection.getString("location"));
+                    if (mapSection.isSet("color")) {
                         Color color = parseColor(mapSection.getString("color"));
                         map.setColor(color);
                     }
@@ -919,7 +915,7 @@ public final class XItemStack {
             if (supports(20)) {
                 if (meta instanceof ArmorMeta) {
                     ArmorMeta armorMeta = (ArmorMeta) meta;
-                    if (config.contains("trim")) {
+                    if (config.isSet("trim")) {
                         ConfigurationSection trim = config.getConfigurationSection("trim");
                         TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.get(NamespacedKey.fromString(trim.getString("material")));
                         TrimPattern trimPattern = Registry.TRIM_PATTERN.get(NamespacedKey.fromString(trim.getString("pattern")));
@@ -1023,7 +1019,7 @@ public final class XItemStack {
             meta.setDisplayName(" "); // For GUI easy access configuration purposes
 
         // Unbreakable
-        if (supports(11) && config.contains("unbreakable")) meta.setUnbreakable(config.getBoolean("unbreakable"));
+        if (supports(11) && config.isSet("unbreakable")) meta.setUnbreakable(config.getBoolean("unbreakable"));
 
         // Custom Model Data
         if (supports(14)) {
@@ -1032,7 +1028,7 @@ public final class XItemStack {
         }
 
         // Lore
-        if (config.contains("lore")) {
+        if (config.isSet("lore")) {
             List<String> translatedLore;
             List<String> lores = config.getStringList("lore");
             if (!lores.isEmpty()) {
@@ -1074,19 +1070,19 @@ public final class XItemStack {
         ConfigurationSection enchants = config.getConfigurationSection("enchants");
         if (enchants != null) {
             for (String ench : enchants.getKeys(false)) {
-                Optional<XEnchantment> enchant = XEnchantment.matchXEnchantment(ench);
+                Optional<XEnchantment> enchant = XEnchantment.of(ench);
                 enchant.ifPresent(xEnchantment -> meta.addEnchant(xEnchantment.getEnchant(), enchants.getInt(ench), true));
             }
         } else if (config.getBoolean("glow")) {
             meta.addEnchant(XEnchantment.UNBREAKING.getEnchant(), 1, false);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS); // HIDE_UNBREAKABLE is not for UNBREAKING enchant.
+            XItemFlag.HIDE_ENCHANTS.set(meta);
         }
 
         // Enchanted Books
         ConfigurationSection enchantment = config.getConfigurationSection("stored-enchants");
         if (enchantment != null) {
             for (String ench : enchantment.getKeys(false)) {
-                Optional<XEnchantment> enchant = XEnchantment.matchXEnchantment(ench);
+                Optional<XEnchantment> enchant = XEnchantment.of(ench);
                 EnchantmentStorageMeta book = (EnchantmentStorageMeta) meta;
                 enchant.ifPresent(xEnchantment -> book.addStoredEnchant(xEnchantment.getEnchant(), enchantment.getInt(ench), true));
             }
@@ -1098,17 +1094,16 @@ public final class XItemStack {
             for (String flag : flags) {
                 flag = flag.toUpperCase(Locale.ENGLISH);
                 if (flag.equals("ALL")) {
-                    meta.addItemFlags(ITEM_FLAGS);
+                    XItemFlag.hideEverything(meta);
                     break;
                 }
 
-                ItemFlag itemFlag = Enums.getIfPresent(ItemFlag.class, flag).orNull();
-                if (itemFlag != null) meta.addItemFlags(itemFlag);
+                XItemFlag.of(flag).ifPresent(itemFlag -> itemFlag.set(meta));
             }
         } else {
             String allFlags = config.getString("flags");
             if (!Strings.isNullOrEmpty(allFlags) && allFlags.equalsIgnoreCase("ALL"))
-                meta.addItemFlags(ITEM_FLAGS);
+                XItemFlag.hideEverything(meta);
         }
 
         // Atrributes - https://minecraft.wiki/w/Attribute
@@ -1116,24 +1111,29 @@ public final class XItemStack {
             ConfigurationSection attributes = config.getConfigurationSection("attributes");
             if (attributes != null) {
                 for (String attribute : attributes.getKeys(false)) {
-                    Attribute attributeInst = Enums.getIfPresent(Attribute.class, attribute.toUpperCase(Locale.ENGLISH)).orNull();
-                    if (attributeInst == null) continue;
+                    Optional<XAttribute> attributeInst = XAttribute.of(attribute);
+                    if (!attributeInst.isPresent() || !attributeInst.get().isSupported()) continue;
+
                     ConfigurationSection section = attributes.getConfigurationSection(attribute);
                     if (section == null) continue;
 
-                    String attribId = section.getString("id");
-                    UUID id = attribId != null ? UUID.fromString(attribId) : UUID.randomUUID();
+                    // String attribId = section.getString("id");
+                    // UUID id = attribId != null ? UUID.fromString(attribId) : UUID.randomUUID();
                     EquipmentSlot slot = section.getString("slot") != null ? Enums.getIfPresent(EquipmentSlot.class, section.getString("slot")).or(EquipmentSlot.HAND) : null;
 
-                    AttributeModifier modifier = new AttributeModifier(
-                            id,
-                            section.getString("name"),
+                    String attrName = section.getString("name");
+                    if (attrName == null) {
+                        attrName = UUID.randomUUID().toString().toLowerCase(Locale.ENGLISH);
+                    }
+
+                    AttributeModifier modifier = XAttribute.createModifier(
+                            attrName,
                             section.getDouble("amount"),
                             Enums.getIfPresent(AttributeModifier.Operation.class, section.getString("operation"))
                                     .or(AttributeModifier.Operation.ADD_NUMBER),
-                            slot);
-
-                    meta.addAttributeModifier(attributeInst, modifier);
+                            slot
+                    );
+                    meta.addAttributeModifier(attributeInst.get().get(), modifier);
                 }
             }
         }
@@ -1148,8 +1148,8 @@ public final class XItemStack {
      * @param map the map to convert.
      * @return a {@code ConfigurationSection} containing the map values.
      */
-    @Nonnull
-    private static ConfigurationSection mapToConfigSection(@Nonnull Map<?, ?> map) {
+    @NotNull
+    private static ConfigurationSection mapToConfigSection(@NotNull Map<?, ?> map) {
         ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -1173,8 +1173,8 @@ public final class XItemStack {
      * @param config the configuration section to convert.
      * @return a {@code Map<String, Object>} containing the configuration section values.
      */
-    @Nonnull
-    private static Map<String, Object> configSectionToMap(@Nonnull ConfigurationSection config) {
+    @NotNull
+    private static Map<String, Object> configSectionToMap(@NotNull ConfigurationSection config) {
         Map<String, Object> map = new LinkedHashMap<>();
 
         for (String key : config.getKeys(false)) {
@@ -1197,14 +1197,14 @@ public final class XItemStack {
      * Accepts the following formats:
      * "r, g, b"
      * "#RRGGBB"
-     * decimal number representing "r << 16 | g << 8 | b"
+     * decimal number representing {@code "r << 16 | g << 8 | b"}
      * (format "0xRRGGBB" is converted to decimal by SnakeYAML and handled as such)
      *
      * @param str the RGB string.
      * @return a color based on the RGB.
      * @since 1.1.0
      */
-    @Nonnull
+    @NotNull
     public static Color parseColor(@Nullable String str) {
         if (Strings.isNullOrEmpty(str)) return Color.BLACK;
         List<String> rgb = split(str.replace(" ", ""), ',');
@@ -1235,8 +1235,9 @@ public final class XItemStack {
      * @return the items that did not fit and were dropped.
      * @since 2.0.1
      */
-    @Nonnull
-    public static List<ItemStack> giveOrDrop(@Nonnull Player player, @Nullable ItemStack... items) {
+    @NotNull
+    @Contract(mutates = "param1")
+    public static List<ItemStack> giveOrDrop(@NotNull Player player, @Nullable ItemStack... items) {
         return giveOrDrop(player, false, items);
     }
 
@@ -1249,8 +1250,9 @@ public final class XItemStack {
      * @return the items that did not fit and were dropped.
      * @since 2.0.1
      */
-    @Nonnull
-    public static List<ItemStack> giveOrDrop(@Nonnull Player player, boolean split, @Nullable ItemStack... items) {
+    @NotNull
+    @Contract(mutates = "param1")
+    public static List<ItemStack> giveOrDrop(@NotNull Player player, boolean split, @Nullable ItemStack... items) {
         if (items == null || items.length == 0) return new ArrayList<>();
         List<ItemStack> leftOvers = addItems(player.getInventory(), split, items);
         World world = player.getWorld();
@@ -1260,7 +1262,8 @@ public final class XItemStack {
         return leftOvers;
     }
 
-    public static List<ItemStack> addItems(@Nonnull Inventory inventory, boolean split, @Nonnull ItemStack... items) {
+    @Contract(mutates = "param1")
+    public static List<ItemStack> addItems(@NotNull Inventory inventory, boolean split, @NotNull ItemStack... items) {
         return addItems(inventory, split, null, items);
     }
 
@@ -1277,9 +1280,11 @@ public final class XItemStack {
      * @return items that didn't fit in the inventory.
      * @since 4.0.0
      */
-    @Nonnull
-    public static List<ItemStack> addItems(@Nonnull Inventory inventory, boolean split,
-                                           @Nullable Predicate<Integer> modifiableSlots, @Nonnull ItemStack... items) {
+
+    @NotNull
+    @Contract(mutates = "param1")
+    public static List<ItemStack> addItems(@NotNull Inventory inventory, boolean split,
+                                           @Nullable Predicate<Integer> modifiableSlots, @NotNull ItemStack... items) {
         Objects.requireNonNull(inventory, "Cannot add items to null inventory");
         Objects.requireNonNull(items, "Cannot add null items to inventory");
 
@@ -1289,7 +1294,7 @@ public final class XItemStack {
         // We could pass the length to individual methods, so they could also use getItem() which
         // skips parsing all the items in the inventory if not needed, but that's just too much.
         // Note: This is not the same as Inventory#getSize()
-        int invSize = inventory.getStorageContents().length;
+        int invSize = getStorageContents(inventory).length;
         int lastEmpty = 0;
 
         for (ItemStack item : items) {
@@ -1344,7 +1349,10 @@ public final class XItemStack {
         return leftOvers;
     }
 
-    public static int firstPartial(@Nonnull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
+    @NotNull
+    @Contract(pure = true)
+    @Range(from = -1, to = Integer.MAX_VALUE)
+    public static int firstPartial(@NotNull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
         return firstPartial(inventory, item, beginIndex, null);
     }
 
@@ -1361,9 +1369,12 @@ public final class XItemStack {
      * @throws IndexOutOfBoundsException if the beginning index is less than 0 or greater than the inventory storage size.
      * @since 4.0.0
      */
-    public static int firstPartial(@Nonnull Inventory inventory, @Nullable ItemStack item, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
+    @NotNull
+    @Contract(pure = true)
+    @Range(from = -1, to = Integer.MAX_VALUE)
+    public static int firstPartial(@NotNull Inventory inventory, @Nullable ItemStack item, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
         if (item != null) {
-            ItemStack[] items = inventory.getStorageContents();
+            ItemStack[] items = getStorageContents(inventory);
             int invSize = items.length;
             if (beginIndex < 0 || beginIndex >= invSize)
                 throw new IndexOutOfBoundsException("Begin Index: " + beginIndex + ", Inventory storage content size: " + invSize);
@@ -1378,7 +1389,9 @@ public final class XItemStack {
         return -1;
     }
 
-    public static List<ItemStack> stack(@Nonnull Collection<ItemStack> items) {
+    @NotNull
+    @Contract(pure = true)
+    public static List<ItemStack> stack(@NotNull Collection<ItemStack> items) {
         return stack(items, ItemStack::isSimilar);
     }
 
@@ -1395,8 +1408,9 @@ public final class XItemStack {
      * @return stacked up items.
      * @since 4.0.0
      */
-    @Nonnull
-    public static List<ItemStack> stack(@Nonnull Collection<ItemStack> items, @Nonnull BiPredicate<ItemStack, ItemStack> similarity) {
+    @NotNull
+    @Contract(pure = true)
+    public static List<ItemStack> stack(@NotNull Collection<ItemStack> items, @NotNull BiPredicate<ItemStack, ItemStack> similarity) {
         Objects.requireNonNull(items, "Cannot stack null items");
         Objects.requireNonNull(similarity, "Similarity check cannot be null");
         List<ItemStack> stacked = new ArrayList<>(items.size());
@@ -1418,7 +1432,9 @@ public final class XItemStack {
         return stacked;
     }
 
-    public static int firstEmpty(@Nonnull Inventory inventory, int beginIndex) {
+    @Contract(pure = true)
+    @Range(from = -1, to = Integer.MAX_VALUE)
+    public static int firstEmpty(@NotNull Inventory inventory, int beginIndex) {
         return firstEmpty(inventory, beginIndex, null);
     }
 
@@ -1434,8 +1450,10 @@ public final class XItemStack {
      * @throws IndexOutOfBoundsException if the beginning index is less than 0 or greater than the inventory storage size.
      * @since 4.0.0
      */
-    public static int firstEmpty(@Nonnull Inventory inventory, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
-        ItemStack[] items = inventory.getStorageContents();
+    @Contract(pure = true)
+    @Range(from = -1, to = Integer.MAX_VALUE)
+    public static int firstEmpty(@NotNull Inventory inventory, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
+        ItemStack[] items = getStorageContents(inventory);
         int invSize = items.length;
         if (beginIndex < 0 || beginIndex >= invSize)
             throw new IndexOutOfBoundsException("Begin Index: " + beginIndex + ", Inventory storage content size: " + invSize);
@@ -1458,9 +1476,11 @@ public final class XItemStack {
      * @see #firstPartial(Inventory, ItemStack, int)
      * @since 4.2.0
      */
-    public static int firstPartialOrEmpty(@Nonnull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
+    @Contract(pure = true)
+    @Range(from = -1, to = Integer.MAX_VALUE)
+    public static int firstPartialOrEmpty(@NotNull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
         if (item != null) {
-            ItemStack[] items = inventory.getStorageContents();
+            ItemStack[] items = getStorageContents(inventory);
             int len = items.length;
             if (beginIndex < 0 || beginIndex >= len)
                 throw new IndexOutOfBoundsException("Begin Index: " + beginIndex + ", Size: " + len);
@@ -1472,6 +1492,50 @@ public final class XItemStack {
             }
         }
         return -1;
+    }
+
+    /**
+     * Cross-version compatible version of {@link Inventory#getStorageContents()}.
+     */
+    @Contract(pure = true)
+    public static ItemStack[] getStorageContents(Inventory inventory) {
+        // Mojang divides player inventory like this:
+        //     public final ItemStack[] items = new ItemStack[36];
+        //     public final ItemStack[] armor = new ItemStack[4];
+        //     public final ItemStack[] extraSlots = new ItemStack[1];
+        if (SUPPORTS_Inventory_getStorageContents) {
+            // v1.9 extends inventory API
+            return inventory.getStorageContents();
+        } else {
+            // Arrays.copyOfRange(this.getContents(), 0, this.getInventory().items.length);
+            // 36 -> boots, 37 -> leggings, 38 -> chestplate, 39 - helmet, 40 -> offhand
+            return Arrays.copyOfRange(inventory.getContents(), 0, 36);
+        }
+    }
+
+    /**
+     * @see #isEmpty(ItemStack)
+     * @since 7.5.2
+     */
+    @Contract(pure = true)
+    public static boolean notEmpty(@Nullable ItemStack item) {
+        return !isEmpty(item);
+    }
+
+    /**
+     * Checks if this item is {@code null} or {@link Material#AIR}.
+     * The latter can only happen in the following situations:
+     * <ul>
+     *     <li>{@link PlayerInventory#getItemInMainHand()}</li>
+     *     <li>{@link PlayerInventory#getItemInOffHand()}</li>
+     * </ul>
+     *
+     * @see #notEmpty(ItemStack)
+     * @since 7.5.2
+     */
+    @Contract(pure = true)
+    public static boolean isEmpty(@Nullable ItemStack item) {
+        return item == null || item.getType() == Material.AIR;
     }
 
     public static class MaterialCondition extends RuntimeException {

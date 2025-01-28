@@ -44,6 +44,11 @@ interface ConfigurationSection {
     operator fun contains(path: String): Boolean
 
     /**
+     * 同 [contains] 方法，一个别名。
+     */
+    fun isSet(path: String): Boolean
+
+    /**
      * 通过路径获取请求的对象。
      *
      * 如果对象不存在但已指定默认值，则将返回默认值。
