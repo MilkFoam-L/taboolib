@@ -185,5 +185,16 @@
       "file": "bukkit-7331f017-members.csrg",
       "hash": "5aa3df18ea93525036a437f0b848dba6496eddac"
     }
+  },
+  {
+    "version": "1.21.4",
+    "combined": {
+      "file": "bukkit-1.21.4-cl.csrg",
+      "hash": "3145d143a632834065a06066e92ea1b1f0d7b083"
+    },
+    "fields": {
+      "file": "bukkit-a0531ed8-members.csrg",
+      "hash": "9d1ccd2b3aea2581688de1f36242e27af83d3f4b"
+    }
   }
 ]

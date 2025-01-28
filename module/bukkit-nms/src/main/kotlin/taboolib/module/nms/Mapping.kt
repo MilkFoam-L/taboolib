@@ -189,8 +189,14 @@ class SpigotMapping(val combined: String, val fields: String) {
             if (mappingJson == null) {
                 warning(
                     """
-                        资源文件 "mapping.json" 未能找到。
-                        Resource "mapping.json" not found.
+                        未能找到资源文件 "mapping.json"，请重启服务器并检查插件是否正常工作。
+                        Resource file "mapping.json" not found, please restart the server and check if the plugin is working properly.
+                    """.t()
+                )
+                warning(
+                    """
+                        已检索到的资源文件: ${runningResources.keys}
+                        Available resource files: ${runningResources.keys}
                     """.t()
                 )
                 return@unsafeLazy null
