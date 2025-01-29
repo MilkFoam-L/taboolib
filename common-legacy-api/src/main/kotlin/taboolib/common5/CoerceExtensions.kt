@@ -2,6 +2,7 @@
 
 package taboolib.common5
 
+import java.math.BigDecimal
 import java.math.RoundingMode
 
 inline val Any?.cint: Int
@@ -28,7 +29,7 @@ inline val Any?.cchar: Char
 inline val Any?.cbool: Boolean
     get() = Coerce.toBoolean(this)
 
-fun Double.format(digits: Int = 2, roundingMode: RoundingMode = RoundingMode.HALF_UP): Double {
+fun Double.format(digits: Int = 2, roundingMode: Int = BigDecimal.ROUND_HALF_UP): Double {
     return try {
         Coerce.format(this, digits, roundingMode)
     } catch (_: Throwable) {
@@ -36,7 +37,7 @@ fun Double.format(digits: Int = 2, roundingMode: RoundingMode = RoundingMode.HAL
     }
 }
 
-fun Float.format(digits: Int = 2, roundingMode: RoundingMode = RoundingMode.HALF_UP): Float {
+fun Float.format(digits: Int = 2, roundingMode: Int = BigDecimal.ROUND_HALF_UP): Float {
     return try {
         Coerce.format(this, digits, roundingMode)
     } catch (_: Throwable) {

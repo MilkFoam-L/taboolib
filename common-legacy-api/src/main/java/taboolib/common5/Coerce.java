@@ -44,7 +44,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Utility class for coercing unknown values to specific target types.
  */
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings({"UnstableApiUsage", "BigDecimalLegacyMethod"})
 public final class Coerce {
 
     private static final Pattern listPattern = Pattern.compile("^([(\\[{]?)(.+?)([)\\]}]?)$");
@@ -61,14 +61,14 @@ public final class Coerce {
     }
 
     public static double format(double value, int scale) {
-        return format(value, scale, RoundingMode.HALF_UP);
+        return format(value, scale);
     }
 
-    public static double format(double value, int scale, RoundingMode roundingMode) {
+    public static double format(double value, int scale, int roundingMode) {
         return BigDecimal.valueOf(value).setScale(scale, roundingMode).doubleValue();
     }
 
-    public static float format(float value, int scale, RoundingMode roundingMode) {
+    public static float format(float value, int scale, int roundingMode) {
         return BigDecimal.valueOf(value).setScale(scale, roundingMode).floatValue();
     }
 
