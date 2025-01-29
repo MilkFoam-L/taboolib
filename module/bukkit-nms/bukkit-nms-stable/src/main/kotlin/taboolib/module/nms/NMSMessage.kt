@@ -3,7 +3,7 @@ package taboolib.module.nms
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.boss.BossBar
-import org.bukkit.craftbukkit.v1_21_R1.util.CraftChatMessage
+import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.setProperty
@@ -136,7 +136,7 @@ private typealias NMSChatSerializer = net.minecraft.network.chat.IChatBaseCompon
 private typealias NMSClientboundSetTitlesAnimationPacket = net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket
 private typealias NMSClientboundSetTitleTextPacket = net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket
 private typealias NMSClientboundSetSubtitleTextPacket = net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
-private typealias CraftBossBar21 = org.bukkit.craftbukkit.v1_21_R1.boss.CraftBossBar
+private typealias CraftBossBar21 = org.bukkit.craftbukkit.v1_21_R3.boss.CraftBossBar
 
 private typealias NMSChatSerializer16 = net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer
 // title

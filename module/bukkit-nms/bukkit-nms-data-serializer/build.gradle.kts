@@ -4,7 +4,7 @@ dependencies {
     compileOnly(project(":common-util"))
     compileOnly(project(":module:bukkit-nms"))
     // 服务端
-    compileOnly("ink.ptms.core:v12101:12101-minimize:mapped")
+    compileOnly("ink.ptms.core:v12104:12104:mapped")
     // DataSerializer
     compileOnly("io.netty:netty-all:4.1.73.Final")
 }

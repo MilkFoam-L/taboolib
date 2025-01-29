@@ -3,8 +3,8 @@ package taboolib.module.nms
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.*
 import net.minecraft.world.item.component.CustomData
-import org.bukkit.craftbukkit.v1_20_R4.CraftRegistry
-import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack
+import org.bukkit.craftbukkit.v1_21_R3.CraftRegistry
+import org.bukkit.craftbukkit.v1_21_R3.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import kotlin.jvm.optionals.getOrNull
 

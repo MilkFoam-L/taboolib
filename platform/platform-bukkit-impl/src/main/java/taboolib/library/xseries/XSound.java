@@ -1771,6 +1771,21 @@ public final class XSound extends XModule<XSound, Sound> {
                     "(?<sound>[\\w$_]+|" + NAMESPACED_SOUND_PATTERN.pattern() + ")\\s*" +
                     "(?:,\\s*(?<volume>[+-]?(?:\\d*\\.)?\\d+)\\s*(?:,\\s*(?<pitch>[+-]?(?:\\d*\\.)?\\d+))?)?\\s*");
 
+    @Override
+    public @NotNull String friendlyName() {
+        return super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return super.isSupported();
+    }
+
+    @Override
+    public @NotNull XSound or(XSound other) {
+        return super.or(other);
+    }
+
     public enum Category {
         MASTER, MUSIC, RECORDS, WEATHER, BLOCKS,
         HOSTILE, NEUTRAL, PLAYERS, AMBIENT, VOICE;

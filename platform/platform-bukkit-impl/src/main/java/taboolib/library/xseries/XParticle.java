@@ -22,6 +22,7 @@
 
 package taboolib.library.xseries;
 
+import org.jetbrains.annotations.NotNull;
 import taboolib.library.xseries.base.XBase;
 import taboolib.library.xseries.base.XRegistry;
 import taboolib.library.xseries.base.annotations.XChange;
@@ -321,8 +322,23 @@ public enum XParticle implements XBase<XParticle, Particle> {
         return REGISTRY.getByName(particle);
     }
 
+    @Override
+    public @NotNull String friendlyName() {
+        return XBase.super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return XBase.super.isSupported();
+    }
+
+    @Override
+    public @NotNull XParticle or(XParticle other) {
+        return XBase.super.or(other);
+    }
+
     private static final class Data {
-        private static final XRegistry<XParticle, Particle> REGISTRY =
-                new XRegistry<>(Particle.class, XParticle.class, XParticle[]::new);
+
+        private static final XRegistry<XParticle, Particle> REGISTRY = new XRegistry<>(Particle.class, XParticle.class, XParticle[]::new);
     }
 }

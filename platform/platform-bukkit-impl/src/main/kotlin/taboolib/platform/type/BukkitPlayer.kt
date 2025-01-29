@@ -17,6 +17,7 @@ import taboolib.common.util.Vector
 import taboolib.common.util.orNull
 import taboolib.library.xseries.XParticle
 import taboolib.library.xseries.XSound
+import taboolib.library.xseries.base.XBase
 import taboolib.platform.util.LegacyPlayer
 import java.net.InetSocketAddress
 import java.util.*
@@ -327,8 +328,8 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun sendParticle(particle: String, location: Location, offset: Vector, count: Int, speed: Double, data: Any?) {
-        val bukkitType = XParticle.of(particle).orNull()?.get() ?: return
-        player.spawnParticle(bukkitType, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, data)
+        val xbase = XParticle.of(particle).orNull() as? XBase<*, Particle> ?: return
+        player.spawnParticle(xbase.get()!!, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, data)
     }
 
     override fun performCommand(command: String): Boolean {

@@ -3,6 +3,7 @@ package taboolib.library.xseries
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.library.xseries.base.XBase
 import taboolib.module.chat.colored
 
 /**
@@ -44,7 +45,8 @@ fun ConfigurationSection.getItemStack(node: String, transfer: (String) -> String
  * @return 解析后的 Material 对象，如果无法匹配则返回 STONE
  */
 fun String.parseToMaterial(): Material {
-    return XMaterial.matchXMaterial(this).orElse(XMaterial.STONE).parseMaterial()!!
+    val xbase = XMaterial.matchXMaterial(this).orElse(XMaterial.STONE) as XBase<*, Material>
+    return xbase.get()!!
 }
 
 /**

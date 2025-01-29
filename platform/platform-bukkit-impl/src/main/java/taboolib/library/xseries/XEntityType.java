@@ -197,6 +197,21 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
 
     public static final XRegistry<XEntityType, EntityType> REGISTRY = Data.REGISTRY;
 
+    @Override
+    public @NotNull String friendlyName() {
+        return XBase.super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return XBase.super.isSupported();
+    }
+
+    @Override
+    public @NotNull XEntityType or(XEntityType other) {
+        return XBase.super.or(other);
+    }
+
     private static final class Data {
         public static final XRegistry<XEntityType, EntityType> REGISTRY =
                 new XRegistry<>(EntityType.class, XEntityType.class, XEntityType[]::new);

@@ -5,7 +5,7 @@ dependencies {
     compileOnly(project(":module:minecraft:minecraft-chat"))
     compileOnly(project(":module:bukkit-nms"))
     compileOnly(project(":module:bukkit:bukkit-util"))
-    compileOnly(project(":module:bukkit:bukkit-xseries"))
+    compileOnly(project(":platform:platform-bukkit-impl"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
     compileOnly("ink.ptms.core:v11904:11904-minimize:mapped")

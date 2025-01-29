@@ -139,6 +139,21 @@ public enum XItemFlag implements XBase<XItemFlag, ItemFlag> {
         this.itemFlag = Data.REGISTRY.stdEnum(this, names);
     }
 
+    @Override
+    public @NotNull String friendlyName() {
+        return XBase.super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return XBase.super.isSupported();
+    }
+
+    @Override
+    public @NotNull XItemFlag or(XItemFlag other) {
+        return XBase.super.or(other);
+    }
+
     private static final class Data {
         private static final XRegistry<XItemFlag, ItemFlag> REGISTRY =
                 new XRegistry<>(ItemFlag.class, XItemFlag.class, XItemFlag[]::new);

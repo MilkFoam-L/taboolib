@@ -9,7 +9,7 @@ import net.minecraft.world.entity.ai.goal.PathfinderGoalSelector
 import net.minecraft.world.entity.ai.navigation.NavigationAbstract
 import net.minecraft.world.level.pathfinder.PathEntity
 import org.bukkit.Location
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntity
+import org.bukkit.craftbukkit.v1_21_R3.entity.CraftEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.tabooproject.reflex.Reflex.Companion.getProperty

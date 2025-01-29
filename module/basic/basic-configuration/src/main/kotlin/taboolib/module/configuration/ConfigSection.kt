@@ -51,6 +51,10 @@ open class ConfigSection(var root: Config, override var name: String = "", overr
         return root.contains(path)
     }
 
+    override fun isSet(path: String): Boolean {
+        return root.contains(path)
+    }
+
     override fun get(path: String): Any? {
         return get(path, null)
     }

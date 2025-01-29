@@ -5,7 +5,7 @@ import io.netty.buffer.Unpooled
 import net.minecraft.core.IRegistryCustom
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.chat.ComponentSerialization
-import org.bukkit.craftbukkit.v1_21_R1.util.CraftChatMessage
+import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage
 import java.io.DataOutput
 
 /**

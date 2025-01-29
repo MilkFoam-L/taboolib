@@ -751,7 +751,7 @@ public final class XItemStack {
                     try {
                         potionType = PotionType.valueOf(baseType);
                     } catch (IllegalArgumentException ex) {
-                        potionType = PotionType.HEALING;
+                        potionType = PotionType.WATER;
                     }
 
                     potion.setBasePotionType(potionType);

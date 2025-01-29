@@ -5,7 +5,6 @@ import net.afyer.afybroker.core.message.SendPlayerMessageMessage
 import net.afyer.afybroker.core.message.SendPlayerTitleMessage
 import net.afyer.afybroker.server.proxy.BrokerPlayer
 import taboolib.common.platform.ProxyGameMode
-import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.platform.function.warning
@@ -312,15 +311,8 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
         error("Unsupported")
     }
 
-    override fun sendParticle(
-        particle: ProxyParticle,
-        location: Location,
-        offset: Vector,
-        count: Int,
-        speed: Double,
-        data: ProxyParticle.Data?
-    ) {
-        error("Unsupported")
+    override fun sendParticle(particle: String, location: Location, offset: Vector, count: Int, speed: Double, data: Any?) {
+        TODO("Not yet implemented")
     }
 
     override fun performCommand(command: String): Boolean {

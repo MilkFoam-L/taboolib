@@ -22,6 +22,7 @@
 package taboolib.library.xseries.base;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import javax.annotation.Nonnull;
@@ -99,5 +100,20 @@ public abstract class XModule<XForm extends XModule<XForm, BukkitForm>, BukkitFo
     @Deprecated
     public final boolean equals(Object obj) {
         return super.equals(obj);
+    }
+
+    @Override
+    public @NotNull String friendlyName() {
+        return XBase.super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return XBase.super.isSupported();
+    }
+
+    @Override
+    public @NotNull XForm or(XForm other) {
+        return XBase.super.or(other);
     }
 }

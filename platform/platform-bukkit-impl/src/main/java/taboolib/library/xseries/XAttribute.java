@@ -21,6 +21,7 @@
  */
 package taboolib.library.xseries;
 
+import org.bukkit.inventory.EquipmentSlotGroup;
 import taboolib.library.xseries.base.XModule;
 import taboolib.library.xseries.base.XRegistry;
 import org.bukkit.NamespacedKey;
@@ -28,7 +29,6 @@ import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -106,16 +106,15 @@ public final class XAttribute extends XModule<XAttribute, Attribute> {
      *
      * @param slot when null, defaults to {@link org.bukkit.inventory.EquipmentSlotGroup#ANY}
      */
+    @SuppressWarnings({"removal", "UnstableApiUsage"})
     public static AttributeModifier createModifier(@NotNull String key, double amount, @NotNull AttributeModifier.Operation operation, @Nullable EquipmentSlot slot) {
         Objects.requireNonNull(key, "Key is null");
         Objects.requireNonNull(operation, "Operation is null");
 
         if (SUPPORTS_MODERN_MODIFIERS) {
             NamespacedKey ns = Objects.requireNonNull(NamespacedKey.fromString(key), () -> "Invalid namespace: " + key);
-            // noinspection UnstableApiUsage
             return new AttributeModifier(ns, amount, operation, (slot == null ? EquipmentSlotGroup.ANY : slot.getGroup()));
         } else {
-            // noinspection removal
             return new AttributeModifier(UUID.randomUUID(), key, amount, operation, slot);
         }
     }

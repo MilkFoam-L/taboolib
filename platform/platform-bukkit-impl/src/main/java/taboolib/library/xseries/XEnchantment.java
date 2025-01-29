@@ -370,4 +370,19 @@ public final class XEnchantment extends XModule<XEnchantment, Enchantment> {
     public Enchantment getEnchant() {
         return get();
     }
+
+    @Override
+    public @NotNull String friendlyName() {
+        return super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return super.isSupported();
+    }
+
+    @Override
+    public @NotNull XEnchantment or(XEnchantment other) {
+        return super.or(other);
+    }
 }

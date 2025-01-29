@@ -19,111 +19,104 @@
  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package taboolib.library.xseries.base;
+package taboolib.library.xseries.base
 
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Contract
+import java.util.*
+import java.util.stream.Collectors
+import javax.annotation.Nonnull
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 /**
  * Do not use this class directly.
- * <p>
+ *
+ *
  * All XModules should implement the following static methods:
- * <pre>{@code
- *     public static final XRegistry<XAttribute, Attribute> REGISTRY;
+ * <pre>`public static final XRegistry<XAttribute, Attribute> REGISTRY;
  *
- *     public static XForm of(@Nonnull BukkitForm bukkit) {
- *         return REGISTRY.getByBukkitForm(bukkit);
- *     }
+ * public static XForm of(@Nonnull BukkitForm bukkit) {
+ * return REGISTRY.getByBukkitForm(bukkit);
+ * }
  *
- *     public static Optional<XForm> of(@Nonnull String bukkit) {
- *         return REGISTRY.getByName(bukkit);
- *     }
+ * public static Optional<XForm> of(@Nonnull String bukkit) {
+ * return REGISTRY.getByName(bukkit);
+ * }
  *
- *     @Nonnull
- *     @Deprecated
- *     public static XForm[] values() {
- *         return REGISTRY.values();
- *     }
  *
- *     @Nonnull
- *     @Unmodifable
- *     public static Collection<XAttribute> getValues() {
- *         return REGISTRY.getValues();
- *     }
- * }</pre>
- * All these methods are available from their {@link XRegistry}, however these are for
+ *
+ * public static XForm[] values() {
+ * return REGISTRY.values();
+ * }
+ *
+ *
+ *
+ * public static Collection<XAttribute> getValues() {
+ * return REGISTRY.getValues();
+ * }
+`</pre> *
+ * All these methods are available from their [XRegistry], however these are for
  * cross-compatibility (which will be removed later) and ease of use.
  *
  * @param <XForm>      the class type associated with the Bukkit type defined by XSeries.
  * @param <BukkitForm> the Bukkit class type associated with the XForm.
  * @see XModule
- */
-public interface XBase<XForm extends XBase<XForm, BukkitForm>, BukkitForm> {
+</BukkitForm></XForm> */
+interface XBase<XForm : XBase<XForm, BukkitForm>?, BukkitForm> {
     /**
      * Should be used for saving data.
      */
     @Nonnull
     @Contract(pure = true)
-    String name();
+    fun name(): String
 
-    @ApiStatus.Internal
-    @Contract(pure = true)
-    String[] getNames();
+    val names: Array<String>
 
     /**
-     * In most cases you should be using {@link #name()} instead.
+     * In most cases you should be using [.name] instead.
      *
      * @return a friendly readable string name.
      */
     @Nonnull
     @Contract(pure = true)
-    default String friendlyName() {
-        return Arrays.stream(name().split("_"))
-                .map(t -> t.charAt(0) + t.substring(1).toLowerCase(Locale.ENGLISH))
-                .collect(Collectors.joining(" "));
+    fun friendlyName(): String {
+        return Arrays.stream(name().split("_".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+            .map { t: String -> t[0].toString() + t.substring(1).lowercase() }
+            .collect(Collectors.joining(" "))
     }
 
-    @Nullable
     @Contract(pure = true)
-    BukkitForm get();
+    fun get(): BukkitForm?
 
-    /**
-     * Checks if this sound is supported in the current Minecraft version.
-     * <p>
-     * An invocation of this method yields exactly the same result as the expression:
-     * <p>
-     * <blockquote>
-     * {@link #get()} != null
-     * </blockquote>
-     *
-     * @return true if the current version has this sound, otherwise false.
-     * @since 1.0.0
-     */
-    @Contract(pure = true)
-    default boolean isSupported() {
-        return get() != null;
-    }
+    @get:Contract(pure = true)
+    val isSupported: Boolean
+        /**
+         * Checks if this sound is supported in the current Minecraft version.
+         *
+         * An invocation of this method yields exactly the same result as the expression:
+         *
+         * <blockquote>
+         * [.get] != null
+         * </blockquote>
+         *
+         * @return true if the current version has this sound, otherwise false.
+         * @since 1.0.0
+         */
+        get() = get() != null
 
     /**
      * Checks if this form is supported in the current version and
      * returns itself if yes.
-     * <p>
+     *
+     *
      * In the other case, the alternate form will get returned,
      * no matter if it is supported or not.
      *
      * @param other the other form to get if this one is not supported.
-     * @return this form or the {@code other} if not supported.
+     * @return this form or the `other` if not supported.
      */
-    @SuppressWarnings("unchecked")
     @Nonnull
     @Contract(pure = true)
-    default XForm or(XForm other) {
-        return this.isSupported() ? (XForm) this : other;
+    @Suppress("UNCHECKED_CAST")
+    fun or(other: XForm): XForm {
+        return if (this.isSupported) this as XForm else other
     }
 }

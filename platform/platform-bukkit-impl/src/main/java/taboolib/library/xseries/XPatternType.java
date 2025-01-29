@@ -111,4 +111,19 @@ public final class XPatternType extends XModule<XPatternType, PatternType> {
     private static XPatternType std(String... names) {
         return REGISTRY.std(names);
     }
+
+    @Override
+    public @NotNull String friendlyName() {
+        return super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return super.isSupported();
+    }
+
+    @Override
+    public @NotNull XPatternType or(XPatternType other) {
+        return super.or(other);
+    }
 }

@@ -43,7 +43,7 @@ class NMSParticleImpl : NMSParticle() {
         return if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) {
             val param = if (versionId >= 12002) {
                 try {
-                    org.bukkit.craftbukkit.v1_21_R1.CraftParticle.createParticleParam(particle, data)
+                    org.bukkit.craftbukkit.v1_21_R3.CraftParticle.createParticleParam(particle, data)
                 } catch (e: NoSuchMethodError) {
                     org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data)
                 }

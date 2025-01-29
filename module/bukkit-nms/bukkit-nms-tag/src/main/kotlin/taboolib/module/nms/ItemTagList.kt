@@ -2,6 +2,7 @@ package taboolib.module.nms
 
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Consumer
+import java.util.function.IntFunction
 
 /**
  * TabooLib
@@ -139,6 +140,16 @@ class ItemTagList : ItemTagData, MutableList<ItemTagData> {
 
     override fun toString(): String {
         return saveToString()
+    }
+
+    fun toArray(): Array<ItemTagData> {
+        return value.toTypedArray()
+    }
+
+    // Class 'ItemTagList' is not abstract and does not implement abstract member public abstract fun <T : Any!> toArray(p0: Array<(out) T!>!): Array<(out) T!>! defined in kotlin.collections.MutableList
+
+    fun <T : Any> toArray(p0: Array<out T>): Array<out T> {
+        return value.toArray(p0)
     }
 
     companion object {

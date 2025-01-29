@@ -2353,6 +2353,21 @@ public enum XMaterial implements XBase<XMaterial, Material> {
         }
     }
 
+    @Override
+    public @NotNull String friendlyName() {
+        return XBase.super.friendlyName();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return XBase.super.isSupported();
+    }
+
+    @Override
+    public @NotNull XMaterial or(XMaterial other) {
+        return XBase.super.or(other);
+    }
+
     /**
      * Used for data that need to be accessed during enum initialization.
      *
