@@ -27,6 +27,14 @@ interface DataSerializerFactory {
 
 /**
  * 创建一个 [DataSerializer]
+ * 从 Adyeshach 继承过来的老名字
+ */
+fun createDataSerializer(builder: DataSerializer.() -> Unit = {}): DataSerializer {
+    return DataSerializerFactory.instance.newSerializer().also(builder)
+}
+
+/**
+ * 创建一个 [DataSerializer]
  */
 fun dataSerializerBuilder(builder: DataSerializer.() -> Unit = {}): DataSerializer {
     return DataSerializerFactory.instance.newSerializer().also(builder)

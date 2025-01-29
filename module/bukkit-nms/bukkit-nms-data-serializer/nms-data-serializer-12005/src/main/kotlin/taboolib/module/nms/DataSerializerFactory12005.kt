@@ -51,6 +51,10 @@ class DataSerializerFactory12005 : DataSerializerFactory, DataSerializer {
         return buf.writeBoolean(boolean).let { this }
     }
 
+    override fun writeMetadataLegacy(meta: List<Any>): DataSerializer {
+        TODO("Not yet implemented")
+    }
+
     override fun writeComponent(json: String): DataSerializer {
         ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buf, CraftChatMessage.fromJSON(json))
         return this

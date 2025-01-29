@@ -6,9 +6,10 @@ import io.netty.handler.codec.EncoderException
 import net.minecraft.SystemUtils
 import net.minecraft.nbt.DynamicOpsNBT
 import net.minecraft.nbt.NBTCompressedStreamTools
-import net.minecraft.network.PacketDataSerializer
 import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.chat.IChatBaseComponent
+import net.minecraft.server.v1_16_R3.DataWatcher
+import net.minecraft.server.v1_16_R3.PacketDataSerializer
 import java.io.DataOutput
 
 /**
@@ -52,6 +53,11 @@ class DataSerializerFactoryLegacy : DataSerializerFactory, DataSerializer {
 
     override fun writeBoolean(boolean: Boolean): DataSerializer {
         return buf.writeBoolean(boolean).let { this }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun writeMetadataLegacy(meta: List<Any>): DataSerializer {
+        return DataWatcher.a(meta as List<DataWatcher.Item<*>>, buf).let { this }
     }
 
     override fun writeComponent(json: String): DataSerializer {

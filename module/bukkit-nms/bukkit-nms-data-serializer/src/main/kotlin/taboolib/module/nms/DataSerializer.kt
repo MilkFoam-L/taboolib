@@ -32,6 +32,11 @@ interface DataSerializer {
 
     fun writeBoolean(boolean: Boolean): DataSerializer
 
+    /**
+     * 仅限在 1.19.3 之前的版本使用
+     */
+    fun writeMetadataLegacy(meta: List<Any>): DataSerializer
+
     fun writeUUID(uuid: UUID): DataSerializer {
         writeLong(uuid.mostSignificantBits)
         writeLong(uuid.leastSignificantBits)
@@ -115,7 +120,7 @@ interface DataSerializer {
         return this
     }
 
-    fun writeGameProfileProperties(map: ForwardingMultimap<String, Any>): DataSerializer {
+    fun writeGameProfileProperties(map: ForwardingMultimap<*, *>): DataSerializer {
         writeVarInt(map.size())
         map.values().forEach { property ->
             writeUtf(property.getProperty<String>("name")!!)
