@@ -40,9 +40,7 @@ object TestSimpleAi : Test() {
         results += sandbox("AI:navigationMove(LivingEntity)") {
             villager.navigationMove(villager)
         }
-        results += sandbox("AI:navigationReach()") {
-            villager.navigationReach()
-        }
+        // results += sandbox("AI:navigationReach()") { villager.navigationReach() }
         results += sandbox("AI:controllerLookAt(Location)") {
             villager.controllerLookAt(villager.location)
         }

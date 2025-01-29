@@ -2,7 +2,6 @@ package taboolib.module.nms.test
 
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
-import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.Test
@@ -45,14 +44,14 @@ object TestNMSPacket : Test() {
             // 测试发包
             result += sandbox("NMS:sendPacketBlocking(Player, Any)") {
                 try {
-                    player.sendPacketBlocking(nmsClass("PacketPlayOutKeepAlive").unsafeInstance())
+                    player.sendPacketBlocking(nmsClass("ClientboundBlockChangedAckPacket").invokeConstructor(0))
                 } catch (ex: ClassNotFoundException) {
                     player.sendPacketBlocking(nmsClass("PacketPlayOutViewDistance").invokeConstructor(8))
                 }
             }
             result += sandbox("NMS:sendBundlePacketBlocking(Player, Any)") {
                 try {
-                    player.sendBundlePacketBlocking(nmsClass("PacketPlayOutKeepAlive").unsafeInstance())
+                    player.sendBundlePacketBlocking(nmsClass("ClientboundBlockChangedAckPacket").invokeConstructor(0))
                 } catch (ex: ClassNotFoundException) {
                     player.sendBundlePacketBlocking(nmsClass("PacketPlayOutViewDistance").invokeConstructor(8))
                 }
