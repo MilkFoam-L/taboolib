@@ -6,7 +6,6 @@ import taboolib.common.PrimitiveIO;
 import taboolib.common.PrimitiveSettings;
 import taboolib.common.TabooLib;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,8 +67,7 @@ public class RuntimeEnv {
             }
             // 加载本地文件定义的依赖
             try {
-                URL url = RuntimeEnvDependency.class.getClassLoader().getResource("META-INF/taboolib/dependency.json");
-                ENV_DEPENDENCY.loadFromLocalFile(url);
+                ENV_DEPENDENCY.loadFromLocalFile(RuntimeEnvDependency.class.getClassLoader().getResource("META-INF/taboolib/dependency.json"));
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
