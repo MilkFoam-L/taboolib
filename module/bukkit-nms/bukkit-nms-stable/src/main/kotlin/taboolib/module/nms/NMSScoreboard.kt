@@ -22,8 +22,8 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.util.t
 import taboolib.common.util.unsafeLazy
-import taboolib.module.nms.type.PlayerScoreboard
 import taboolib.module.nms.type.ChatColorFormat
+import taboolib.module.nms.type.PlayerScoreboard
 import taboolib.platform.util.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -148,7 +148,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
 
     val uniqueOwner = listOf("§黒", "§黓", "§黔", "§黕", "§黖", "§黗", "§默", "§黙", "§黚", "§黛", "§黜", "§黝", "§點", "§黟", "§黠", "§黡", "§黢", "§黣", "§黤", "§黥", "§黦")
 
-    val universalTeamData: Class<*> by unsafeLazy { PacketPlayOutScoreboardTeam::class.java.declaredClasses[0] }
+    val universalTeamData: Class<*> by unsafeLazy {
+        PacketPlayOutScoreboardTeam::class.java.declaredClasses.first { !it.isEnum }
+    }
 
     fun getObjectiveName(player: Player): String {
         return player.getMetaFirstOrNull("t_scoreboard_objective_name")?.asString() ?: player.uniqueId.toString().substring(0..7)
@@ -163,11 +165,11 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("method", 0)
             // 1.21
             if (MinecraftVersion.versionId >= 12005) {
-                packet.setProperty("numberFormat", Optional.of(BlankFormat()))
+                packet.setProperty("numberFormat", Optional.of(BlankFormat.INSTANCE))
             }
             // 1.20.4
             else if (MinecraftVersion.versionId >= 12004) {
-                packet.setProperty("numberFormat", BlankFormat())
+                packet.setProperty("numberFormat", BlankFormat.INSTANCE)
             }
         } else {
             handle2DuplicatedPacket(player, packet, title)
@@ -194,11 +196,11 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 packet.setProperty("method", 1)
                 // 1.21
                 if (MinecraftVersion.versionId >= 12005) {
-                    packet.setProperty("numberFormat", Optional.of(BlankFormat()))
+                    packet.setProperty("numberFormat", Optional.of(BlankFormat.INSTANCE))
                 }
                 // 1.20.4
                 else if (MinecraftVersion.versionId >= 12004) {
-                    packet.setProperty("numberFormat", BlankFormat())
+                    packet.setProperty("numberFormat", BlankFormat.INSTANCE)
                 }
             }
             // region Legacy Version

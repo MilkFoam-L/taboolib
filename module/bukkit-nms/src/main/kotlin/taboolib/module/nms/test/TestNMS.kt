@@ -55,7 +55,7 @@ class TestNMSTranslationImpl : TestNMSTranslation() {
     override fun test(result: MutableList<Result>) {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) {
             // 测试转译
-            result += Test.sandbox("NMS:Translation:PaperRemap") { SystemUtils.ioPool() }
+            result += Test.sandbox("NMS:Translation:PaperRemap") { SystemUtils.getEpochMillis() }
             // 测试转译环境下的 Reflex
             result += Test.sandbox("NMS:Translation:Reflex(f)") { net.minecraft.SystemUtils::class.java.getProperty<Any>("a", isStatic = true) }
             result += Test.sandbox("NMS:Translation:Reflex(m)") { net.minecraft.SystemUtils::class.java.invokeMethod<Any>("a", isStatic = true) }

@@ -50,18 +50,34 @@ class NMSParticleImpl : NMSParticle() {
             } else {
                 org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data)
             }
-            net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles(
-                param as net.minecraft.server.v1_16_R1.ParticleParam,
-                true,
-                location.x,
-                location.y,
-                location.z,
-                offset.x.toFloat(),
-                offset.y.toFloat(),
-                offset.z.toFloat(),
-                speed.toFloat(),
-                count
-            )
+            if (version > 12101) {
+                net.minecraft.network.protocol.game.PacketPlayOutWorldParticles(
+                    param as net.minecraft.core.particles.ParticleParam,
+                    true,
+                    true,
+                    location.x,
+                    location.y,
+                    location.z,
+                    offset.x.toFloat(),
+                    offset.y.toFloat(),
+                    offset.z.toFloat(),
+                    speed.toFloat(),
+                    count
+                )
+            } else {
+                net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles(
+                    param as net.minecraft.server.v1_16_R1.ParticleParam,
+                    true,
+                    location.x,
+                    location.y,
+                    location.z,
+                    offset.x.toFloat(),
+                    offset.y.toFloat(),
+                    offset.z.toFloat(),
+                    speed.toFloat(),
+                    count
+                )
+            }
         } else {
             net.minecraft.server.v1_12_R1.PacketPlayOutWorldParticles(
                 org.bukkit.craftbukkit.v1_12_R1.CraftParticle.toNMS(particle),

@@ -2,6 +2,7 @@ package taboolib.common
 
 import taboolib.common.io.digest
 import taboolib.common.io.groupId
+import taboolib.common.io.isDevelopmentMode
 import taboolib.common.io.newFile
 import taboolib.common.util.t
 import java.io.File
@@ -17,7 +18,7 @@ object BinaryCache {
     fun <T> read(name: String, version: String, block: (bytes: ByteArray) -> T): T? {
         // 是否有缓存文件
         val cacheFile = getCacheFile().resolve("binary/${name}.cache")
-        if (cacheFile.exists()) {
+        if (cacheFile.exists() && !isDevelopmentMode) {
             // 检查版本
             val metaFile = getCacheFile().resolve("binary/${name}.cache.sha1")
             val sha1 = if (metaFile.exists()) metaFile.readText() else ""
