@@ -12,7 +12,7 @@ import taboolib.module.nms.NMSItemTag
 fun ItemStack.toNMSKeyAndItemData(): Pair<String, String> {
     val nmsItemStack = NMSItemTag.instance.getNMSCopy(this)
     val nmsKey = try {
-        type.key.key
+        "${type.key.namespace}:${type.key.key}"
     } catch (ex: NoSuchMethodError) {
         // #359
         // 错误的获取方式
