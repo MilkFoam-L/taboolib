@@ -56,13 +56,21 @@ interface PageableChest<T> : Chest {
 
     /**
      * 设置下一页按钮
+     *
+     * @param slot 按钮位置
+     * @param callback 按钮物品回调
+     * @param roll 是否循环翻页
      */
-    fun setNextPage(slot: Int, callback: (page: Int, hasNextPage: Boolean) -> ItemStack)
+    fun setNextPage(slot: Int, roll: Boolean = false, callback: (page: Int, hasNextPage: Boolean) -> ItemStack)
 
     /**
      * 设置上一页按钮
+     *
+     * @param slot 按钮位置
+     * @param callback 按钮物品回调
+     * @param roll 是否循环翻页
      */
-    fun setPreviousPage(slot: Int, callback: (page: Int, hasPreviousPage: Boolean) -> ItemStack)
+    fun setPreviousPage(slot: Int, roll: Boolean = false, callback: (page: Int, hasPreviousPage: Boolean) -> ItemStack)
 
     /**
      * 切换页面回调

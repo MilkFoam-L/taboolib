@@ -18,6 +18,9 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
     /** 页数 **/
     override var page = 0
 
+    /** 总页数 */
+    var maxPage = 0
+
     /** 页面玩家 **/
     lateinit var viewer: Player
 
@@ -109,42 +112,72 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
 
     /**
      * 设置下一页按钮
+     *
+     * @param slot 按钮位置
+     * @param callback 按钮物品回调
+     * @param roll 是否循环翻页
      */
-    override fun setNextPage(slot: Int, callback: (page: Int, hasNextPage: Boolean) -> ItemStack) {
+    override fun setNextPage(
+        slot: Int,
+        roll: Boolean,
+        callback: (page: Int, hasNextPage: Boolean) -> ItemStack
+    ) {
+        // 刷新页面
+        fun refresh() {
+            if (virtualized) {
+                viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
+            } else {
+                viewer.openInventory(build())
+            }
+            pageChangeCallback(viewer)
+        }
         // 设置物品
         set(slot) { callback(page, hasNextPage()) }
         // 点击事件
         onClick(slot) {
             if (hasNextPage()) {
                 page++
-                // 刷新页面
-                if (virtualized) {
-                    viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
-                } else {
-                    viewer.openInventory(build())
-                }
-                pageChangeCallback(viewer)
+                refresh()
+            } else if (roll) {
+                // 若循环翻页, 则跳转到第一页
+                page = 0
+                refresh()
             }
         }
     }
 
     /**
      * 设置上一页按钮
+     *
+     * @param slot 按钮位置
+     * @param callback 按钮物品回调
+     * @param roll 是否循环翻页
      */
-    override fun setPreviousPage(slot: Int, callback: (page: Int, hasPreviousPage: Boolean) -> ItemStack) {
+    override fun setPreviousPage(
+        slot: Int,
+        roll: Boolean,
+        callback: (page: Int, hasPreviousPage: Boolean) -> ItemStack
+    ) {
+        // 刷新页面
+        fun refresh() {
+            if (virtualized) {
+                viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
+            } else {
+                viewer.openInventory(build())
+            }
+            pageChangeCallback(viewer)
+        }
         // 设置物品
         set(slot) { callback(page, hasPreviousPage()) }
         // 点击事件
         onClick(slot) {
             if (hasPreviousPage()) {
                 page--
-                // 刷新页面
-                if (virtualized) {
-                    viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
-                } else {
-                    viewer.openInventory(build())
-                }
-                pageChangeCallback(viewer)
+                refresh()
+            } else if (roll) {
+                // 若循环翻页, 则跳转到最后一页
+                page = maxPage - 1
+                refresh()
             }
         }
     }
@@ -188,6 +221,9 @@ open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest
         // 本次页面所使用的元素缓存
         val elementMap = hashMapOf<Int, T>()
         val elementItems = subList(elementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
+
+        // 计算最大页数
+        maxPage = elementsCache.size / menuSlots.size
 
         /**
          * 构建事件处理函数
