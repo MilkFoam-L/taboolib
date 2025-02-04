@@ -23,8 +23,8 @@ import taboolib.common.env.RuntimeDependency
 @RuntimeDependencies(
     RuntimeDependency(
         "!redis.clients:jedis:4.2.3",
-        test = "!redis.clients.jedis_4_2_3.Jedis",
-        relocate = ["!redis.clients.jedis", "!redis.clients.jedis_4_2_3",
+        test = "!redis.clients.jedis_4_2_30.Jedis",
+        relocate = ["!redis.clients.jedis", "!redis.clients.jedis_4_2_30",
             "!org.apache.commons.pool2", "!org.apache.commons.pool2_2_11_1"],
         transitive = false
     ),

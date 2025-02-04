@@ -11,7 +11,7 @@ dependencies {
 
 tasks {
     withType<ShadowJar> {
-        relocate("redis.clients.jedis.", "redis.clients.jedis_4_2_3.")
+        relocate("redis.clients.jedis.", "redis.clients.jedis_4_2_30.")
         relocate("com.electronwill.nightconfig.core.conversion", "taboolib.library.configuration")
         relocate("com.electronwill.nightconfig.", "com.electronwill.nightconfig_3_6_7.")
         relocate("org.apache.commons.pool2.", "org.apache.commons.pool2_2_11_1.")
