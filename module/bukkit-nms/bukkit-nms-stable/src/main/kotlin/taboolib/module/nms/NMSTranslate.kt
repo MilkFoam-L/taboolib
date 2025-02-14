@@ -59,6 +59,13 @@ fun ItemStack.getI18nName(player: Player? = null): String {
 }
 
 /**
+ * 获取实体修改后的名字,如果没有被修改则是原版名
+ */
+fun Entity.getName(player: Player? = null): String {
+    return customName ?: getI18nName(player)
+}
+
+/**
  * 获取实体的译名
  */
 fun Entity.getI18nName(player: Player? = null): String {
