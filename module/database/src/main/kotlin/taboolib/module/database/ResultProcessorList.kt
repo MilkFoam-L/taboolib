@@ -41,7 +41,7 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val source: Ex
             error("processors is already executed")
         }
         isExecuted = true
-        val last = processors.removeLast()
+        val last = processors.removeAt(processors.size - 1)
         return try {
             processors.forEach { it.run() }
             last.executor.invoke { next() }
@@ -55,7 +55,7 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val source: Ex
             error("processors is already executed")
         }
         isExecuted = true
-        val last = processors.removeLast()
+        val last = processors.removeAt(processors.size - 1)
         return try {
             processors.forEach { it.run() }
             last.executor.invoke {
@@ -72,7 +72,7 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val source: Ex
             error("processors is already executed")
         }
         isExecuted = true
-        val last = processors.removeLast()
+        val last = processors.removeAt(processors.size - 1)
         return try {
             processors.forEach { it.run() }
             last.executor.invoke {
@@ -92,7 +92,7 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val source: Ex
             error("processors is already executed")
         }
         isExecuted = true
-        val last = processors.removeLast()
+        val last = processors.removeAt(processors.size - 1)
         return try {
             processors.forEach { it.run() }
             last.executor.invoke {
@@ -112,7 +112,7 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val source: Ex
             error("processors is already executed")
         }
         isExecuted = true
-        val last = processors.removeLast()
+        val last = processors.removeAt(processors.size - 1)
         try {
             processors.forEach { it.run() }
             last.executor.invoke {
@@ -130,7 +130,7 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val source: Ex
             error("processors is already executed")
         }
         isExecuted = true
-        val last = processors.removeLast()
+        val last = processors.removeAt(processors.size - 1)
         try {
             processors.forEach { it.run() }
             last.executor.invoke {

@@ -57,7 +57,7 @@ class DefaultSimpleComponent(val source: String): SimpleComponent {
         val clone = root.toMutableList()
         // 移除最后一个空白文本块
         if (clone.isNotEmpty() && clone.last().build(transfer).toRawMessage() == rawMessage.toRawMessage()) {
-            clone.removeLast()
+            clone.removeAt(clone.size - 1)
         }
         clone.forEach { block ->
             if (block is TextBlock.NewLine) {

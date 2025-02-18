@@ -67,7 +67,7 @@ private fun Array<String>.formatSign(line: Int): Array<String> {
         list.add("")
     }
     while (list.size > line) {
-        list.removeLast()
+        list.removeAt(list.size - 1)
     }
     return list.toTypedArray()
 }
