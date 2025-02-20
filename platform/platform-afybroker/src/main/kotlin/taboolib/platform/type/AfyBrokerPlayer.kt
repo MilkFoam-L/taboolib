@@ -1,6 +1,5 @@
 package taboolib.platform.type
 
-import net.afyer.afybroker.core.message.KickPlayerMessage
 import net.afyer.afybroker.core.message.SendPlayerMessageMessage
 import net.afyer.afybroker.core.message.SendPlayerTitleMessage
 import net.afyer.afybroker.server.proxy.BrokerPlayer
@@ -12,7 +11,6 @@ import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import java.net.InetSocketAddress
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * TabooLib
@@ -259,13 +257,11 @@ class AfyBrokerPlayer(val player: BrokerPlayer) : ProxyPlayer {
     }
 
     override fun kick(message: String?) {
-        val msg = KickPlayerMessage().setPlayer(player.name).setMessage(message)
         try {
-            player.proxy.oneway(msg)
+            player.kick(message)
         } catch (ex: Exception) {
             warning(ex)
         }
-
     }
 
     override fun chat(message: String) {
