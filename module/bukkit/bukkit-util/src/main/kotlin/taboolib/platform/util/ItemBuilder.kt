@@ -18,6 +18,7 @@ import org.bukkit.potion.PotionEffect
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.random
+import taboolib.common5.cint
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import java.util.*
@@ -383,7 +384,12 @@ open class ItemBuilder {
         }
         // CustomModelData
         try {
-            customModelData = itemMeta.getProperty<Int>("customModelData") ?: -1
+            val modelData = itemMeta.getProperty<Any>("customModelData")
+            customModelData = if (modelData is Int) {
+                itemMeta.getProperty<Int>("customModelData") ?: -1
+            } else {
+                modelData?.getProperty<Any>("handle")?.getProperty<List<Float>>("floats")?.firstOrNull()?.cint ?: -1
+            }
         } catch (ignored: NoSuchFieldException) {
         }
     }
