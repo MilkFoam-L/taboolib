@@ -1,5 +1,6 @@
 package taboolib.module.nms
 
+import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufOutputStream
 import io.netty.buffer.Unpooled
 import io.netty.handler.codec.EncoderException
@@ -21,7 +22,7 @@ import java.io.DataOutput
  */
 class DataSerializerFactoryLegacy : DataSerializerFactory, DataSerializer {
 
-    val buf = PacketDataSerializer(Unpooled.buffer())
+    val buf: ByteBuf = PacketDataSerializer(Unpooled.buffer())
 
     override fun writeByte(byte: Byte): DataSerializer {
         return buf.writeByte(byte.toInt()).let { this }
@@ -57,7 +58,7 @@ class DataSerializerFactoryLegacy : DataSerializerFactory, DataSerializer {
 
     @Suppress("UNCHECKED_CAST")
     override fun writeMetadataLegacy(meta: List<Any>): DataSerializer {
-        return DataWatcher.a(meta as List<DataWatcher.Item<*>>, buf).let { this }
+        return DataWatcher.a(meta as List<DataWatcher.Item<*>>, buf as PacketDataSerializer).let { this }
     }
 
     override fun writeComponent(json: String): DataSerializer {
