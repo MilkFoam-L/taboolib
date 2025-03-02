@@ -5,7 +5,7 @@ package taboolib.platform.util
 import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
-import org.bukkit.attribute.Attribute
+import org.bukkit.NamespacedKey
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.banner.Pattern
 import org.bukkit.enchantments.Enchantment
@@ -19,6 +19,7 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.random
 import taboolib.common5.cint
+import taboolib.library.xseries.XAttribute
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import java.util.*
@@ -141,6 +142,18 @@ open class ItemBuilder {
      * CustomModelData
      */
     var customModelData = -1
+
+    /**
+     * 1.21.2
+     * Tooltip Style
+     */
+    var tooltipStyle: NamespacedKey? = null
+
+    /**
+     * 1.21.4
+     * ItemModel
+     */
+    var itemModel: NamespacedKey? = null
 
     /**
      * 唯一化
@@ -288,11 +301,21 @@ open class ItemBuilder {
             }
         } catch (_: NoSuchMethodException) {
         }
+        // Tooltip Style
+        try {
+            itemMeta.tooltipStyle = tooltipStyle
+        } catch (_: NoClassDefFoundError) {
+        }
+        // ItemModel
+        try {
+            itemMeta.itemModel = itemModel
+        } catch (_: NoClassDefFoundError) {
+        }
         // 唯一化
         try {
             if (unique) {
                 val modifier = AttributeModifier(UUID.randomUUID(), "unique", random(0.0, 1.0), AttributeModifier.Operation.ADD_NUMBER)
-                itemMeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, modifier)
+                XAttribute.ATTACK_SPEED.get()?.let { itemMeta.addAttributeModifier(it, modifier) }
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
             }
         } catch (_: NoSuchMethodError) {
@@ -390,6 +413,16 @@ open class ItemBuilder {
             } else {
                 modelData?.getProperty<Any>("handle")?.getProperty<List<Float>>("floats")?.firstOrNull()?.cint ?: -1
             }
+        } catch (ignored: NoSuchFieldException) {
+        }
+        // Tooltip Style
+        try {
+            tooltipStyle = itemMeta.tooltipStyle
+        } catch (ignored: NoSuchFieldException) {
+        }
+        // ItemModel
+        try {
+            itemModel = itemMeta.itemModel
         } catch (ignored: NoSuchFieldException) {
         }
     }
