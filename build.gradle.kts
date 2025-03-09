@@ -41,10 +41,16 @@ subprojects {
         testImplementation("org.apache.commons:commons-lang3:3.5")
         testImplementation("org.tabooproject.reflex:reflex:1.1.8")
         testImplementation("org.tabooproject.reflex:analyser:1.1.8")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     }
 
     java {
         withSourcesJar()
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
     }
 
     tasks.withType<ShadowJar> {
