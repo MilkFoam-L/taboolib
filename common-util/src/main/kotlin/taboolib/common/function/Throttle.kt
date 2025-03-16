@@ -62,7 +62,7 @@ abstract class ThrottleFunction<K : Any>(
             addThrottleFunction(this)
         }
 
-        fun canExecute(delay: Long = 0L): Boolean {
+        fun canExecute(delay: Long = this.delay): Boolean {
             return canExecute(Unit, delay)
         }
 

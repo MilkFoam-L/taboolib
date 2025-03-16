@@ -72,7 +72,11 @@ object ScriptService : QuestService<ScriptContext> {
     }
 
     override fun getLocalizedText(node: String, vararg params: Any): String {
-        return locale.getString(node, "{$node}")!!.replaceWithOrder(*params)
+        return if (::locale.isInitialized) {
+            locale.getString(node, "{$node}")!!.replaceWithOrder(*params)
+        } else {
+            "{$node}(${params.joinToString(", ")})"
+        }
     }
 
     override fun startQuest(context: ScriptContext) {

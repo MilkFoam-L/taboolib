@@ -30,6 +30,11 @@ public class LocalizedException extends RuntimeException {
     }
 
     @Override
+    public String getMessage() {
+        return QuestService.instance().getLocalizedText(node, params);
+    }
+
+    @Override
     public String getLocalizedMessage() {
         return QuestService.instance().getLocalizedText(node, params);
     }
