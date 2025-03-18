@@ -218,7 +218,7 @@ annotation class Parallel(val id: String = "", val dependOn: Array<String> = [],
  * @param block 任务执行的代码块
  * @return 任务执行的 Future 对象
  */
-fun parallel(id: String = "anonymous_${UUID.randomUUID()}", runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
+fun parallel(id: String = "anonymous_${pluginId}_${UUID.randomUUID()}", runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
     return parallel(id, emptyList(), runOn, block)
 }
 
@@ -231,7 +231,7 @@ fun parallel(id: String = "anonymous_${UUID.randomUUID()}", runOn: LifeCycle = L
  * @param block 任务执行的代码块
  * @return 任务执行的 Future 对象
  */
-fun parallel(id: String = "anonymous_${UUID.randomUUID()}", dependOn: String, runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
+fun parallel(id: String = "anonymous_${pluginId}_${UUID.randomUUID()}", dependOn: String, runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
     return parallel(id, listOf(dependOn), runOn, block)
 }
 
@@ -244,6 +244,6 @@ fun parallel(id: String = "anonymous_${UUID.randomUUID()}", dependOn: String, ru
  * @param block 任务执行的代码块
  * @return 任务执行的 Future 对象
  */
-fun parallel(id: String = "anonymous_${UUID.randomUUID()}", dependOn: List<String>, runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
+fun parallel(id: String = "anonymous_${pluginId}_${UUID.randomUUID()}", dependOn: List<String>, runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
     return ParallelSystem.registerTask(id, dependOn, runOn, block)
 }
