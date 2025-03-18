@@ -142,7 +142,7 @@ open class ConfigSection(var root: Config, override var name: String = "", overr
     }
 
     override fun isBoolean(path: String): Boolean {
-        return get(path) is Double
+        return get(path) is Boolean
     }
 
     override fun getDouble(path: String): Double {
