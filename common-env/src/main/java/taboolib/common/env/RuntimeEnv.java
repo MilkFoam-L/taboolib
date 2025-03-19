@@ -56,13 +56,13 @@ public class RuntimeEnv {
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
-            }
-            // 加载 Kotlin Coroutines 环境
-            if (loadKotlinCoroutines) {
-                try {
-                    ENV_DEPENDENCY.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
+                // 加载 Kotlin Coroutines 环境
+                if (loadKotlinCoroutines) {
+                    try {
+                        ENV_DEPENDENCY.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
             // 加载本地文件定义的依赖
