@@ -292,7 +292,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
             player.stopSound(sound)
             return
         }
-        XSound.of(sound).ifPresent { it.play(location.toBukkitLocation(), volume, pitch) }
+        XSound.of(sound).ifPresent { player.playSound(location.toBukkitLocation(), it.get()!!, volume, pitch) }
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
