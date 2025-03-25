@@ -15,10 +15,7 @@ import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.util.t
 import java.util.*
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import java.util.concurrent.*
 
 /**
  * 一种在 Bukkit 插件环境下利用 Exchanges 实现的并行初始化设想
@@ -83,6 +80,13 @@ object ParallelSystem : ClassVisitor(0) {
     val executorService: ExecutorService
         get() = Exchanges.getOrPut("parallel_executor_service") { Executors.newFixedThreadPool(Bukkit.getPluginManager().plugins.size * 2) }
 
+    /**
+     * 获取正在运行的并行任务
+     */
+    fun getRunningTask(): List<Map.Entry<String, CompletableFuture<*>>> {
+        return globalTaskMap.entries.filter { !it.value.isDone }
+    }
+
     fun registerTask(id: String, dependOn: List<String>, lifeCycle: LifeCycle, block: () -> Unit): CompletableFuture<Unit> {
         // 不允许在 INIT 之后注册
         if (TabooLib.getCurrentLifeCycle() > lifeCycle) {
@@ -113,6 +117,7 @@ object ParallelSystem : ClassVisitor(0) {
         val tasks = localTaskMap.values.filter { it.lifeCycle == lifeCycle }
         // 向中心化的 ExecutorService 提交任务
         tasks.forEach { task ->
+            task.isExecuted = true
             if (task.dependOn.isEmpty()) {
                 // 没有依赖的任务直接提交到线程池
                 executorService.submit {
@@ -140,12 +145,17 @@ object ParallelSystem : ClassVisitor(0) {
                         )
                     }
                 }
-                CompletableFuture.allOf(*dependencies.toTypedArray()).thenRunAsync({
+                CompletableFuture.allOf(*dependencies.toTypedArray()).whenCompleteAsync({ _, ex ->
                     try {
-                        task.block()
-                        task.future.complete(null)
+                        if (ex != null) {
+                            // 依赖存在异常，将当前任务标记为异常完成
+                            task.future.completeExceptionally(ex)
+                        } else {
+                            // 依赖正常完成，执行任务逻辑
+                            task.block()
+                            task.future.complete(null)
+                        }
                     } catch (e: Throwable) {
-                        e.printStackTrace()
                         task.future.completeExceptionally(e)
                     }
                 }, executorService)
@@ -188,9 +198,9 @@ object ParallelSystem : ClassVisitor(0) {
             return
         }
         Exchanges["parallel_main_plugin"] = pluginId
-        registerBukkitListener(AsyncPlayerPreLoginEvent::class.java) {
+        registerBukkitListener(AsyncPlayerPreLoginEvent::class.java) { event ->
             if (globalTaskMap.values.any { !it.isDone }) {
-                it.disallow(
+                event.disallow(
                     AsyncPlayerPreLoginEvent.Result.KICK_OTHER, """
                         服务器正在启动。
                         Server is starting.
@@ -202,7 +212,11 @@ object ParallelSystem : ClassVisitor(0) {
 
     class Task(val id: String, val dependOn: List<String>, val lifeCycle: LifeCycle, val block: () -> Any?) {
 
+        // 回调
         val future = CompletableFuture<Unit>()
+
+        // 是否执行（经过 runTask 函数）
+        var isExecuted = false
     }
 }
 
@@ -231,7 +245,12 @@ fun parallel(id: String = "anonymous_${pluginId}_${UUID.randomUUID()}", runOn: L
  * @param block 任务执行的代码块
  * @return 任务执行的 Future 对象
  */
-fun parallel(id: String = "anonymous_${pluginId}_${UUID.randomUUID()}", dependOn: String, runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
+fun parallel(
+    id: String = "anonymous_${pluginId}_${UUID.randomUUID()}",
+    dependOn: String,
+    runOn: LifeCycle = LifeCycle.ENABLE,
+    block: () -> Unit
+): CompletableFuture<Unit> {
     return parallel(id, listOf(dependOn), runOn, block)
 }
 
@@ -244,6 +263,11 @@ fun parallel(id: String = "anonymous_${pluginId}_${UUID.randomUUID()}", dependOn
  * @param block 任务执行的代码块
  * @return 任务执行的 Future 对象
  */
-fun parallel(id: String = "anonymous_${pluginId}_${UUID.randomUUID()}", dependOn: List<String>, runOn: LifeCycle = LifeCycle.ENABLE, block: () -> Unit): CompletableFuture<Unit> {
+fun parallel(
+    id: String = "anonymous_${pluginId}_${UUID.randomUUID()}",
+    dependOn: List<String>,
+    runOn: LifeCycle = LifeCycle.ENABLE,
+    block: () -> Unit
+): CompletableFuture<Unit> {
     return ParallelSystem.registerTask(id, dependOn, runOn, block)
 }
