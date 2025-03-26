@@ -23,7 +23,7 @@ import static taboolib.common.PrimitiveIO.t;
  * @author Ling556
  */
 @SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
-@PlatformSide(Platform.APPLICATION)
+@PlatformSide(Platform.AFYBROKER)
 public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
 
     @Nullable
