@@ -66,17 +66,11 @@ object Database {
         config.jdbcUrl = host.connectionUrl
         when (host) {
             is HostSQL -> {
-                config.driverClassName = settingsFile.getString("DefaultSettings.DriverClassName", "com.mysql.jdbc.Driver")
                 config.username = host.user
                 config.password = host.password
             }
-            is HostSQLite -> {
-                config.driverClassName = "org.sqlite.JDBC"
-            }
-            else -> {
-                error("Unsupported host: $host")
-            }
         }
+        config.driverClassName = host.driverClass
         config.isAutoCommit = settingsFile.getBoolean("DefaultSettings.AutoCommit", true)
         config.minimumIdle = settingsFile.getInt("DefaultSettings.MinimumIdle", 1)
         config.maximumPoolSize = settingsFile.getInt("DefaultSettings.MaximumPoolSize", 10)

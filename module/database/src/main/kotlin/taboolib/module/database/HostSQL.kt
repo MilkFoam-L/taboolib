@@ -1,6 +1,7 @@
 package taboolib.module.database
 
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.database.Database.settingsFile
 
 /**
  * SQL 数据库地址
@@ -24,6 +25,8 @@ class HostSQL(val host: String, val port: String, val user: String, val password
 
     override val connectionUrlSimple: String
         get() = "jdbc:mysql://$host:$port/$database"
+    override val driverClass: String
+        get() = settingsFile.getString("DefaultSettings.DriverClassName", "com.mysql.jdbc.Driver")!!
 
     constructor(section: ConfigurationSection) : this(
         section.getString("host", "localhost")!!,

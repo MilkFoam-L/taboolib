@@ -21,6 +21,8 @@ abstract class Host<T : ColumnBuilder> {
 
     abstract val connectionUrlSimple: String?
 
+    abstract val driverClass: String
+
     fun createDataSource(autoRelease: Boolean = true, withoutConfig: Boolean = false): DataSource {
         val dataSource = if (withoutConfig) Database.createDataSourceWithoutConfig(this) else Database.createDataSource(this)
         return dataSource.also {
