@@ -22,13 +22,7 @@ import javax.sql.DataSource
         test = "!com.zaxxer.hikari_4_0_3.HikariDataSource",
         relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3", "!org.slf4j", "!org.slf4j_2_0_8"],
         transitive = false
-    ),
-    RuntimeDependency(
-        "!com.zaxxer:HikariCP:4.0.3",
-        test = "!com.zaxxer.hikari_4_0_3.HikariDataSource",
-        relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3", "!org.slf4j", "!org.slf4j_2_0_8"],
-        transitive = false
-    ),
+    )
 )
 object Database {
 
