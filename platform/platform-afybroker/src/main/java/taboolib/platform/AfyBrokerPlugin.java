@@ -80,13 +80,6 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
             }
-            // 启动调度器
-            try {
-                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.AfyBrokerExecutor");
-                o.getClass().getDeclaredMethod("start").invoke(o);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
         }
         // 再次判断插件是否关闭
         // 因为插件可能在 onEnable() 下关闭
