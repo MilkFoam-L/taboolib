@@ -23,8 +23,6 @@ import java.lang.reflect.Method
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerListener : PlatformListener {
 
-    val plugin by unsafeLazy { AfyBrokerPlugin.getInstance() }
-
     val eventBus by unsafeLazy {
         Broker.getPluginManager().getProperty<EventBus>("eventBus")!!
     }

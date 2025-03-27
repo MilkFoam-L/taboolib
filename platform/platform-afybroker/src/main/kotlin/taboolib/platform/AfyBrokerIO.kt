@@ -48,7 +48,7 @@ class AfyBrokerIO : PlatformIO {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
-        return afyBrokerPlugin.server as T
+        return AfyBrokerPlugin.getInstance().server as T
     }
 
     override fun info(vararg message: Any?) {

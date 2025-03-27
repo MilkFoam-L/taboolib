@@ -4,6 +4,8 @@ import taboolib.common.LifeCycle;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
+import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformSide;
 
 import java.io.File;
 
@@ -14,6 +16,7 @@ import java.io.File;
  * @author 坏黑
  * @since 2024/1/26 21:43
  */
+@PlatformSide(Platform.APPLICATION)
 public class App {
 
     static {

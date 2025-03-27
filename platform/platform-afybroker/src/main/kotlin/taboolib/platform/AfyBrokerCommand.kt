@@ -18,6 +18,7 @@ import taboolib.common.platform.function.warning
 import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.util.t
 import taboolib.platform.type.AfyBrokerCommandSender
+import taboolib.platform.util.afyBrokerPlugin
 
 /**
  * TabooLib
@@ -31,16 +32,13 @@ import taboolib.platform.type.AfyBrokerCommandSender
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerCommand : PlatformCommand {
 
-    val plugin: AfyBrokerPlugin
-        get() = AfyBrokerPlugin.getInstance()
-
     override fun registerCommand(
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
         commandBuilder: CommandBase.() -> Unit,
     ) {
-        Broker.getPluginManager().registerCommand(plugin, object : Command(command.name,*command.aliases.toTypedArray()), TabExecutor {
+        Broker.getPluginManager().registerCommand(AfyBrokerPlugin.getInstance(), object : Command(command.name,*command.aliases.toTypedArray()), TabExecutor {
             override fun execute(args: Array<String>) {
                 executor.execute(adaptCommandSender(AfyBrokerCommandSender), command, command.name, args)
             }
