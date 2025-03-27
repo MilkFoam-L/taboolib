@@ -12,6 +12,8 @@ data class HostSQLite(val file: File) : Host<SQLite>() {
 
     override val connectionUrlSimple: String
         get() = "jdbc:sqlite:" + file.path
+    override val driverClass: String
+        get() = "org.sqlite.JDBC"
 
     override fun toString(): String {
         return "HostSQLite(file=$file, connectionUrl='$connectionUrl', connectionUrlSimple='$connectionUrlSimple')"

@@ -47,6 +47,7 @@ include(
     "module:database:database-player-redis",
     "module:database:database-orm",
     "module:database:database-alkaid-redis-tool",
+    "module:database:database-h2",
 
     // 脚本环境
     "module:script:script-javascript",
