@@ -304,12 +304,12 @@ open class ItemBuilder {
         // Tooltip Style
         try {
             itemMeta.tooltipStyle = tooltipStyle
-        } catch (_: NoClassDefFoundError) {
+        } catch (_: NoSuchMethodException) {
         }
         // ItemModel
         try {
             itemMeta.itemModel = itemModel
-        } catch (_: NoClassDefFoundError) {
+        } catch (_: NoSuchMethodException) {
         }
         // 唯一化
         try {
