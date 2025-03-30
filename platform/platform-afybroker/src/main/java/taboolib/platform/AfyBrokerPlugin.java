@@ -95,7 +95,7 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
                         pluginInstance.onActive();
                     }
                 }
-            }, 0, TimeUnit.SECONDS);
+            }, 0, TimeUnit.MILLISECONDS);
         }
     }
 

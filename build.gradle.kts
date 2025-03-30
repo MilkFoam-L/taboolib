@@ -92,11 +92,10 @@ subprojects
 
 fun PublishingExtension.applyToSub(subProject: Project) {
     repositories {
-        maven("http://sacredcraft.cn:8081/repository/releases") {
-            isAllowInsecureProtocol = true
+        maven("https://www.mcwar.cn/nexus/repository/maven-releases/") {
             credentials {
-                username = project.findProperty("taboolibUsername").toString()
-                password = project.findProperty("taboolibPassword").toString()
+                username = project.findProperty("publishUsername").toString()
+                password = project.findProperty("publishPassword").toString()
             }
             authentication {
                 create<BasicAuthentication>("basic")
