@@ -29,6 +29,9 @@ inline val Any?.cchar: Char
 inline val Any?.cbool: Boolean
     get() = Coerce.toBoolean(this)
 
+inline val Any?.cByteArray: ByteArray
+    get() = Coerce.toByteArray(this)
+
 fun Double.format(digits: Int = 2, roundingMode: Int = BigDecimal.ROUND_HALF_UP): Double {
     return try {
         Coerce.format(this, digits, roundingMode)

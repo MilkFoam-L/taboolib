@@ -28,10 +28,15 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.*;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -566,6 +571,80 @@ public final class Coerce {
             return Optional.of(obj.toString().charAt(0));
         } catch (Exception e) {
             // do nothing
+        }
+        return Optional.empty();
+    }
+
+    public static byte[] toByteArray(@Nullable Object obj) {
+        if (obj == null) {
+            return new byte[0];
+        }
+        if (obj instanceof byte[]) {
+            return (byte[]) obj;
+        }
+        if (obj instanceof String) {
+            return ((String) obj).getBytes(StandardCharsets.UTF_8);
+        }
+        if (obj instanceof Number) {
+            if (obj instanceof Integer) {
+                return ByteBuffer.allocate(4).putInt((Integer) obj).array();
+            } else if (obj instanceof Long) {
+                return ByteBuffer.allocate(8).putLong((Long) obj).array();
+            } else if (obj instanceof Short) {
+                return ByteBuffer.allocate(2).putShort((Short) obj).array();
+            } else if (obj instanceof Byte) {
+                return new byte[]{((Byte) obj)};
+            } else if (obj instanceof Float) {
+                return ByteBuffer.allocate(4).putFloat((Float) obj).array();
+            } else if (obj instanceof Double) {
+                return ByteBuffer.allocate(8).putDouble((Double) obj).array();
+            }
+        }
+        if (obj instanceof Serializable) {
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                 ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+                oos.writeObject(obj);
+                return bos.toByteArray();
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
+        return new byte[0];
+    }
+
+    public static Optional<byte[]> asByteArray(@Nullable Object obj) {
+        if (obj == null) {
+            return Optional.empty();
+        }
+        if (obj instanceof byte[]) {
+            return Optional.of((byte[]) obj);
+        }
+        if (obj instanceof String) {
+            return Optional.of(((String) obj).getBytes(StandardCharsets.UTF_8));
+        }
+        if (obj instanceof Number) {
+            if (obj instanceof Integer) {
+                return Optional.of(ByteBuffer.allocate(4).putInt((Integer) obj).array());
+            } else if (obj instanceof Long) {
+                return Optional.of(ByteBuffer.allocate(8).putLong((Long) obj).array());
+            } else if (obj instanceof Short) {
+                return Optional.of(ByteBuffer.allocate(2).putShort((Short) obj).array());
+            } else if (obj instanceof Byte) {
+                return Optional.of(new byte[]{((Byte) obj)});
+            } else if (obj instanceof Float) {
+                return Optional.of(ByteBuffer.allocate(4).putFloat((Float) obj).array());
+            } else if (obj instanceof Double) {
+                return Optional.of(ByteBuffer.allocate(8).putDouble((Double) obj).array());
+            }
+        }
+        if (obj instanceof Serializable) {
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                 ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+                oos.writeObject(obj);
+                return Optional.of(bos.toByteArray());
+            } catch (Exception e) {
+                // do nothing
+            }
         }
         return Optional.empty();
     }

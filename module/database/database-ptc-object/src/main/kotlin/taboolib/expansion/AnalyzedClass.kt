@@ -124,6 +124,7 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                     member.isString -> obj.toString()
                     member.isUUID -> UUID.fromString(obj.toString())
                     member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
+                    member.isByteArray -> obj.cByteArray
                     else -> {
                         val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error(
                             """
