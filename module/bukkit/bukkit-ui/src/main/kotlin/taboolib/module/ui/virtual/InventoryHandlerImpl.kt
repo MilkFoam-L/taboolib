@@ -441,7 +441,7 @@ private typealias NMSPacketPlayOutOpenWindow = net.minecraft.network.protocol.ga
 private typealias NMSPacketPlayOutWindowItems = net.minecraft.network.protocol.game.PacketPlayOutWindowItems
 
 private typealias NMSPacketPlayOutSetSlot = net.minecraft.network.protocol.game.PacketPlayOutSetSlot
-//
+
 private typealias NMSPacketPlayOutSetCarriedSlot = net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket
 
 private typealias NMSPacketPlayOutWindowData = net.minecraft.network.protocol.game.PacketPlayOutWindowData
