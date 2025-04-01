@@ -48,6 +48,10 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
     val isShort: Boolean
         get() = returnType == Short::class.java || returnType == Short::class.javaPrimitiveType
 
+    /** 是否为基础类型（ByteArray） */
+    val isByteArray: Boolean
+        get() = returnType == ByteArray::class.java || returnType == ByteArray::class.javaPrimitiveType
+
     /** 是否为基础类型（Int） */
     val isInt: Boolean
         get() = returnType == Int::class.java || returnType == Int::class.javaPrimitiveType
@@ -82,7 +86,7 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
 
     /** 是否为自定义对象 */
     val isCustomObject: Boolean
-        get() = !isBoolean && !isByte && !isShort && !isInt && !isLong && !isFloat && !isDouble && !isChar && !isString && !isEnum && !isUUID
+        get() = !isBoolean && !isByte && !isShort && !isInt && !isLong && !isFloat && !isDouble && !isChar && !isString && !isEnum && !isUUID && !isByteArray
 
     /** 是否可以转换成字符串类型 */
     fun canConvertedString(): Boolean {

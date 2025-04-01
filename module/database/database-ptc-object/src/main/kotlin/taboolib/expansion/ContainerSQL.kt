@@ -40,6 +40,10 @@ class ContainerSQL(
                     member.isUUID -> add(member.name) {
                         type(ColumnTypeSQL.CHAR, 36) { options(member) }
                     }
+                    // 字节数组
+                    member.isByteArray -> add(member.name) {
+                        type(ColumnTypeSQL.BLOB) { options(member) }
+                    }
                     // 其他类型
                     else -> add(member.name) {
                         val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType)
@@ -76,6 +80,7 @@ class ContainerSQL(
             isFloat -> ColumnTypeSQL.FLOAT
             isDouble -> ColumnTypeSQL.DOUBLE
             isChar -> ColumnTypeSQL.INT
+            isByteArray -> ColumnTypeSQL.BLOB
             else -> error("Unsupported type: $name (${returnType})")
         }
     }
