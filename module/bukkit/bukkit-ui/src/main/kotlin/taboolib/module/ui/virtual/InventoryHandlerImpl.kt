@@ -218,7 +218,7 @@ class InventoryHandlerImpl : InventoryHandler() {
 
         override fun sendCarriedChange(itemStack: ItemStack) {
             if (MinecraftVersion.versionId >= 12104) {
-                viewer.sendPacket(NMSPacketPlayOutSetCarriedSlot(Craft19ItemStack.asNMSCopy(itemStack)))
+                viewer.sendPacket(NMSPacketPlayOutSetCursorItem(Craft19ItemStack.asNMSCopy(itemStack)))
             } else {
                 sendSlotChange(-1, itemStack)
             }
@@ -442,7 +442,7 @@ private typealias NMSPacketPlayOutWindowItems = net.minecraft.network.protocol.g
 
 private typealias NMSPacketPlayOutSetSlot = net.minecraft.network.protocol.game.PacketPlayOutSetSlot
 
-private typealias NMSPacketPlayOutSetCarriedSlot = net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket
+private typealias NMSPacketPlayOutSetCursorItem = net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket
 
 private typealias NMSPacketPlayOutWindowData = net.minecraft.network.protocol.game.PacketPlayOutWindowData
 
