@@ -105,9 +105,7 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
     abstract fun calculateLocations(): List<Location>
 
     open fun alwaysShow() {
-        turnOffTask()
-        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
-        submit(delay = 2) {
+        fun start() {
             running = true
             task = submit(period = period) {
                 if (running) {
@@ -116,12 +114,20 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
             }
             showType = ShowType.ALWAYS_SHOW
         }
+
+        if (running) {
+            turnOffTask()
+            // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
+            submit(delay = 2) {
+                start()
+            }
+        } else {
+            start()
+        }
     }
 
     open fun alwaysShowAsync() {
-        turnOffTask()
-        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
-        submit(delay = 2) {
+        fun start() {
             running = true
             task = submit(period = period, async = true) {
                 if (running) {
@@ -129,6 +135,16 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
                 }
             }
             showType = ShowType.ALWAYS_SHOW_ASYNC
+        }
+
+        if (running) {
+            turnOffTask()
+            // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
+            submit(delay = 2) {
+                start()
+            }
+        } else {
+            start()
         }
     }
 
@@ -141,10 +157,8 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
             }
         }
         val playable = this as Playable
-        turnOffTask()
 
-        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
-        submit(delay = 2) {
+        fun start() {
             running = true
             task = submit(period = period) {
                 if (running) {
@@ -152,6 +166,16 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
                 }
             }
             showType = ShowType.ALWAYS_PLAY
+        }
+
+        if (running) {
+            turnOffTask()
+            // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
+            submit(delay = 2) {
+                start()
+            }
+        } else {
+            start()
         }
     }
 
@@ -164,10 +188,8 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
             }
         }
         val playable = this as Playable
-        turnOffTask()
 
-        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
-        submit(delay = 2) {
+        fun start() {
             running = true
             task = submit(period = period, async = true) {
                 if (running) {
@@ -176,12 +198,23 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
             }
             showType = ShowType.ALWAYS_PLAY_ASYNC
         }
+
+        if (running) {
+            turnOffTask()
+            // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
+            submit(delay = 2) {
+                start()
+            }
+        } else {
+            start()
+        }
     }
 
     open fun turnOffTask() {
         if (task != null) {
             running = false
             task!!.cancel()
+            task = null
             showType = ShowType.NONE
         }
     }
