@@ -304,12 +304,12 @@ open class ItemBuilder {
         // Tooltip Style
         try {
             itemMeta.tooltipStyle = tooltipStyle
-        } catch (_: NoSuchMethodException) {
+        } catch (_: NoSuchMethodError) {
         }
         // ItemModel
         try {
             itemMeta.itemModel = itemModel
-        } catch (_: NoSuchMethodException) {
+        } catch (_: NoSuchMethodError) {
         }
         // 唯一化
         try {
@@ -413,17 +413,17 @@ open class ItemBuilder {
             } else {
                 modelData?.getProperty<Any>("handle")?.getProperty<List<Float>>("floats")?.firstOrNull()?.cint ?: -1
             }
-        } catch (ignored: NoSuchFieldException) {
+        } catch (ignored: NoSuchMethodError) {
         }
         // Tooltip Style
         try {
             tooltipStyle = itemMeta.tooltipStyle
-        } catch (ignored: NoSuchFieldException) {
+        } catch (ignored: NoSuchMethodError) {
         }
         // ItemModel
         try {
             itemModel = itemMeta.itemModel
-        } catch (ignored: NoSuchFieldException) {
+        } catch (ignored: NoSuchMethodError) {
         }
     }
 }
