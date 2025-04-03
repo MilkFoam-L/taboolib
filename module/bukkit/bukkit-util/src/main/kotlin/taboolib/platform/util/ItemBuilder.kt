@@ -413,7 +413,7 @@ open class ItemBuilder {
             } else {
                 modelData?.getProperty<Any>("handle")?.getProperty<List<Float>>("floats")?.firstOrNull()?.cint ?: -1
             }
-        } catch (ignored: NoSuchMethodError) {
+        } catch (ignored: NoSuchFieldException) {
         }
         // Tooltip Style
         try {
