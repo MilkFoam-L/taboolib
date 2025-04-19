@@ -207,16 +207,16 @@ open class ItemBuilder {
      */
     fun colored() {
         if (name != null) {
-            name = try {
+            name = runCatching {
                 name!!.colored()
-            } catch (ex: NoClassDefFoundError) {
+            }.getOrElse {
                 ChatColor.translateAlternateColorCodes('&', name!!)
             }
         }
         if (lore.isNotEmpty()) {
-            val newLore = try {
+            val newLore = runCatching {
                 lore.colored()
-            } catch (ex: NoClassDefFoundError) {
+            }.getOrElse {
                 lore.map { ChatColor.translateAlternateColorCodes('&', it) }
             }
             lore.clear()
@@ -272,53 +272,51 @@ open class ItemBuilder {
         }
 
         // 无法破坏
-        try {
+        runCatching {
             itemMeta.isUnbreakable = isUnbreakable
-        } catch (ex: NoSuchMethodError) {
-            try {
+        }.getOrElse {
+            runCatching {
                 itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
-            } catch (_: NoSuchMethodException) {
             }
         }
         // 蛋
-        try {
+        runCatching {
             if (spawnType != null && itemMeta is SpawnEggMeta) {
                 itemMeta.spawnedType = spawnType
             }
-        } catch (_: NoClassDefFoundError) {
         }
         // 旗帜
-        try {
+        runCatching {
             if (patterns.isNotEmpty() && itemMeta is BannerMeta) {
                 patterns.forEach { itemMeta.addPattern(it) }
             }
-        } catch (_: NoClassDefFoundError) {
         }
         // CustomModelData
-        try {
+        runCatching {
             if (customModelData != -1) {
                 itemMeta.invokeMethod<Void>("setCustomModelData", customModelData)
             }
-        } catch (_: NoSuchMethodException) {
         }
         // Tooltip Style
-        try {
+        runCatching {
             itemMeta.tooltipStyle = tooltipStyle
-        } catch (_: NoSuchMethodError) {
         }
         // ItemModel
-        try {
+        runCatching {
             itemMeta.itemModel = itemModel
-        } catch (_: NoSuchMethodError) {
         }
         // 唯一化
-        try {
+        runCatching {
             if (unique) {
-                val modifier = AttributeModifier(UUID.randomUUID(), "unique", random(0.0, 1.0), AttributeModifier.Operation.ADD_NUMBER)
+                val modifier = AttributeModifier(
+                    UUID.randomUUID(),
+                    "unique",
+                    random(0.0, 1.0),
+                    AttributeModifier.Operation.ADD_NUMBER
+                )
                 XAttribute.ATTACK_SPEED.get()?.let { itemMeta.addAttributeModifier(it, modifier) }
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
             }
-        } catch (_: NoSuchMethodError) {
         }
 
         // 返回
@@ -382,48 +380,41 @@ open class ItemBuilder {
             }
         }
         // 无法破坏
-        try {
+        runCatching {
             isUnbreakable = itemMeta.isUnbreakable
-        } catch (ex: NoSuchMethodError) {
-            try {
+        }.getOrElse {
+            runCatching {
                 isUnbreakable = itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
-            } catch (ignored: NoSuchMethodException) {
             }
         }
         // 刷怪蛋
-        try {
+        runCatching {
             if (itemMeta is SpawnEggMeta && itemMeta.spawnedType != null) {
                 spawnType = itemMeta.spawnedType
             }
-        } catch (ignored: NoClassDefFoundError) {
-        } catch (ignored: UnsupportedOperationException) {
         }
         // 旗帜
-        try {
+        runCatching {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
                 patterns += itemMeta.patterns
             }
-        } catch (ignored: NoClassDefFoundError) {
         }
         // CustomModelData
-        try {
+        runCatching {
             val modelData = itemMeta.getProperty<Any>("customModelData")
             customModelData = if (modelData is Int) {
                 itemMeta.getProperty<Int>("customModelData") ?: -1
             } else {
                 modelData?.getProperty<Any>("handle")?.getProperty<List<Float>>("floats")?.firstOrNull()?.cint ?: -1
             }
-        } catch (ignored: NoSuchFieldException) {
         }
         // Tooltip Style
-        try {
+        runCatching {
             tooltipStyle = itemMeta.tooltipStyle
-        } catch (ignored: NoSuchMethodError) {
         }
         // ItemModel
-        try {
+        runCatching {
             itemModel = itemMeta.itemModel
-        } catch (ignored: NoSuchMethodError) {
         }
     }
 }
