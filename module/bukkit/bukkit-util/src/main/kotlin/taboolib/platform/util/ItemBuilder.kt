@@ -155,6 +155,8 @@ open class ItemBuilder {
      */
     var itemModel: NamespacedKey? = null
 
+    var isHideTooltip: Boolean = false
+
     /**
      * 唯一化
      */
@@ -305,6 +307,10 @@ open class ItemBuilder {
         runCatching {
             itemMeta.itemModel = itemModel
         }
+        // Hide Tooltip
+        runCatching {
+            itemMeta.isHideTooltip = isHideTooltip
+        }
         // 唯一化
         runCatching {
             if (unique) {
@@ -415,6 +421,10 @@ open class ItemBuilder {
         // ItemModel
         runCatching {
             itemModel = itemMeta.itemModel
+        }
+        // Hide Tooltip
+        runCatching {
+            isHideTooltip = itemMeta.isHideTooltip
         }
     }
 }
