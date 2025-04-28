@@ -15,10 +15,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.*
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
-import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.random
-import taboolib.common5.cint
 import taboolib.library.xseries.XAttribute
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
@@ -296,7 +294,7 @@ open class ItemBuilder {
         // CustomModelData
         runCatching {
             if (customModelData != -1) {
-                itemMeta.invokeMethod<Void>("setCustomModelData", customModelData)
+                itemMeta.setCustomModelData(customModelData)
             }
         }
         // Tooltip Style
@@ -407,12 +405,7 @@ open class ItemBuilder {
         }
         // CustomModelData
         runCatching {
-            val modelData = itemMeta.getProperty<Any>("customModelData")
-            customModelData = if (modelData is Int) {
-                itemMeta.getProperty<Int>("customModelData") ?: -1
-            } else {
-                modelData?.getProperty<Any>("handle")?.getProperty<List<Float>>("floats")?.firstOrNull()?.cint ?: -1
-            }
+            customModelData = itemMeta.customModelData
         }
         // Tooltip Style
         runCatching {
