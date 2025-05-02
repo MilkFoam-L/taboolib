@@ -95,7 +95,6 @@ object ActionProperty {
                 }
                 val propertyList = getScriptProperty(instance)
                 for (property in propertyList) {
-                    warning(property.id)
                     val result = (property as ScriptProperty<Any>).read(instance, key)
                     if (result.isSuccessful) {
                         return@thenApply result.value
