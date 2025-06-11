@@ -207,16 +207,16 @@ open class ItemBuilder {
      */
     fun colored() {
         if (name != null) {
-            name = runCatching {
+            name = try {
                 name!!.colored()
-            }.getOrElse {
+            } catch (ex: NoClassDefFoundError) {
                 ChatColor.translateAlternateColorCodes('&', name!!)
             }
         }
         if (lore.isNotEmpty()) {
-            val newLore = runCatching {
+            val newLore = try {
                 lore.colored()
-            }.getOrElse {
+            } catch (ex: NoClassDefFoundError) {
                 lore.map { ChatColor.translateAlternateColorCodes('&', it) }
             }
             lore.clear()
@@ -272,45 +272,52 @@ open class ItemBuilder {
         }
 
         // 无法破坏
-        runCatching {
+        try {
             itemMeta.isUnbreakable = isUnbreakable
-        }.getOrElse {
-            runCatching {
+            } catch (_: NoSuchMethodError) {
+            try {
                 itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
+            } catch (_: NoSuchMethodException) {
             }
         }
         // 蛋
-        runCatching {
+        try {
             if (spawnType != null && itemMeta is SpawnEggMeta) {
                 itemMeta.spawnedType = spawnType
             }
+        } catch (_: NoClassDefFoundError) {
         }
         // 旗帜
-        runCatching {
+        try {
             if (patterns.isNotEmpty() && itemMeta is BannerMeta) {
                 patterns.forEach { itemMeta.addPattern(it) }
             }
+        } catch (_: NoClassDefFoundError) {
         }
         // CustomModelData
-        runCatching {
+        try {
             if (customModelData != -1) {
                 itemMeta.setCustomModelData(customModelData)
             }
+        } catch (_: NoSuchMethodException) {
         }
         // Tooltip Style
-        runCatching {
+        try {
             itemMeta.tooltipStyle = tooltipStyle
+        } catch (_: NoSuchMethodError) {
         }
         // ItemModel
-        runCatching {
+        try {
             itemMeta.itemModel = itemModel
+        } catch (_: NoSuchMethodError) {
         }
         // Hide Tooltip
-        runCatching {
+        try {
             itemMeta.isHideTooltip = isHideTooltip
+        } catch (_: NoSuchMethodError) {
         }
         // 唯一化
-        runCatching {
+        try {
             if (unique) {
                 val modifier = AttributeModifier(
                     UUID.randomUUID(),
@@ -321,6 +328,7 @@ open class ItemBuilder {
                 XAttribute.ATTACK_SPEED.get()?.let { itemMeta.addAttributeModifier(it, modifier) }
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
             }
+        } catch (_: NoSuchMethodError) {
         }
 
         // 返回
@@ -384,40 +392,48 @@ open class ItemBuilder {
             }
         }
         // 无法破坏
-        runCatching {
+        try {
             isUnbreakable = itemMeta.isUnbreakable
-        }.getOrElse {
-            runCatching {
+        } catch (_: NoSuchMethodError) {
+            try {
                 isUnbreakable = itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
+            } catch (_: NoSuchMethodException) {
             }
         }
         // 刷怪蛋
-        runCatching {
+        try {
             if (itemMeta is SpawnEggMeta && itemMeta.spawnedType != null) {
                 spawnType = itemMeta.spawnedType
             }
+        } catch (_: NoSuchMethodError) {
+        } catch (_: UnsupportedOperationException) {
         }
         // 旗帜
-        runCatching {
+        try {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
                 patterns += itemMeta.patterns
             }
+        } catch (_: NoClassDefFoundError) {
         }
         // CustomModelData
-        runCatching {
+        try {
             customModelData = itemMeta.customModelData
+        } catch (_: NoSuchFieldException) {
         }
         // Tooltip Style
-        runCatching {
+        try {
             tooltipStyle = itemMeta.tooltipStyle
+        } catch (_: NoSuchMethodError) {
         }
         // ItemModel
-        runCatching {
+        try {
             itemModel = itemMeta.itemModel
+        } catch (_: NoSuchMethodError) {
         }
         // Hide Tooltip
-        runCatching {
+        try {
             isHideTooltip = itemMeta.isHideTooltip
+        } catch (_: NoSuchMethodError) {
         }
     }
 }
