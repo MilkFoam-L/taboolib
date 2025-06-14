@@ -218,6 +218,10 @@ public final class XEnchantment extends XModule<XEnchantment, Enchantment> {
         }
     }
 
+    static {
+        REGISTRY.discardMetadata();
+    }
+
     private XEnchantment(Enchantment enchantment, String[] names) {
         super(enchantment, names);
     }
@@ -369,20 +373,5 @@ public final class XEnchantment extends XModule<XEnchantment, Enchantment> {
     @Deprecated
     public Enchantment getEnchant() {
         return get();
-    }
-
-    @Override
-    public @NotNull String friendlyName() {
-        return super.friendlyName();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return super.isSupported();
-    }
-
-    @Override
-    public @NotNull XEnchantment or(XEnchantment other) {
-        return super.or(other);
     }
 }
