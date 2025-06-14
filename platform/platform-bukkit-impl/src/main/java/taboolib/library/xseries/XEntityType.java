@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -145,7 +145,14 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
     PILLAGER,
     PLAYER,
     POLAR_BEAR,
-    POTION("SPLASH_POTION"),
+
+    @XInfo(since = "1.21.5")
+    @XChange(version = "1.21.5", from = "POTION", to = "SPLASH_POTION")
+    SPLASH_POTION("POTION"),
+
+    @XInfo(since = "1.21.5")
+    LINGERING_POTION,
+
     PUFFERFISH,
     RABBIT,
     RAVAGER,
@@ -197,21 +204,6 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
 
     public static final XRegistry<XEntityType, EntityType> REGISTRY = Data.REGISTRY;
 
-    @Override
-    public @NotNull String friendlyName() {
-        return XBase.super.friendlyName();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return XBase.super.isSupported();
-    }
-
-    @Override
-    public @NotNull XEntityType or(XEntityType other) {
-        return XBase.super.or(other);
-    }
-
     private static final class Data {
         public static final XRegistry<XEntityType, EntityType> REGISTRY =
                 new XRegistry<>(EntityType.class, XEntityType.class, XEntityType[]::new);
@@ -221,6 +213,10 @@ public enum XEntityType implements XBase<XEntityType, EntityType> {
 
     XEntityType(String... names) {
         this.entityType = Data.REGISTRY.stdEnum(this, names);
+    }
+
+    static {
+        REGISTRY.discardMetadata();
     }
 
     @NotNull
