@@ -417,7 +417,9 @@ open class ItemBuilder {
         }
         // CustomModelData
         try {
-            customModelData = itemMeta.customModelData
+            if (itemMeta.hasCustomModelData()) {
+                customModelData = itemMeta.customModelData
+            }
         } catch (_: NoSuchFieldException) {
         }
         // Tooltip Style
