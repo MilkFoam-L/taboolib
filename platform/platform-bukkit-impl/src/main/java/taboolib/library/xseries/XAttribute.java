@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Crypto Morin
+ * Copyright (c) 2025 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -99,6 +100,10 @@ public final class XAttribute extends XModule<XAttribute, Attribute> {
 
     private XAttribute(Attribute attribute, String[] names) {
         super(attribute, names);
+    }
+
+    static {
+        REGISTRY.discardMetadata();
     }
 
     /**
