@@ -189,19 +189,8 @@ public enum XPotion implements XBase<XPotion, PotionEffectType> {
         }
     }
 
-    @Override
-    public @NotNull String friendlyName() {
-        return XBase.super.friendlyName();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return XBase.super.isSupported();
-    }
-
-    @Override
-    public @NotNull XPotion or(XPotion other) {
-        return XBase.super.or(other);
+    static {
+        REGISTRY.discardMetadata();
     }
 
     private static final class Data {
