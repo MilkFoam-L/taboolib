@@ -296,8 +296,11 @@ open class ItemBuilder {
         }
         // CustomModelData
         try {
-            if (customModelData != -1) {
-                itemMeta.setCustomModelData(customModelData)
+            // 1.21.5+ 必须判断 hasCustomModelData() 否则报错
+            if (itemMeta.hasCustomModelData()) {
+                if (customModelData != -1) {
+                    itemMeta.setCustomModelData(customModelData)
+                }
             }
         } catch (_: NoSuchMethodError) {
         }
@@ -417,10 +420,11 @@ open class ItemBuilder {
         }
         // CustomModelData
         try {
+            // 1.21.5+ 必须判断 hasCustomModelData() 否则报错
             if (itemMeta.hasCustomModelData()) {
                 customModelData = itemMeta.customModelData
             }
-        } catch (_: NoSuchFieldError) {
+        } catch (_: NoSuchMethodError) {
         }
         // Tooltip Style
         try {
