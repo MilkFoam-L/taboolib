@@ -299,7 +299,7 @@ open class ItemBuilder {
             if (customModelData != -1) {
                 itemMeta.setCustomModelData(customModelData)
             }
-        } catch (_: NoSuchMethodException) {
+        } catch (_: NoSuchMethodError) {
         }
         // Tooltip Style
         try {
@@ -420,7 +420,7 @@ open class ItemBuilder {
             if (itemMeta.hasCustomModelData()) {
                 customModelData = itemMeta.customModelData
             }
-        } catch (_: NoSuchFieldException) {
+        } catch (_: NoSuchFieldError) {
         }
         // Tooltip Style
         try {
