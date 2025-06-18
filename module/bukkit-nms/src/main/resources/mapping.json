@@ -207,5 +207,16 @@
       "file": "bukkit-956575d9-members.csrg",
       "hash": "2d4dbd77eafcd301418cc442cf6f93f60ebd2484"
     }
+  },
+  {
+    "version": "1.21.6",
+    "combined": {
+      "file": "bukkit-1.21.6-cl.csrg",
+      "hash": "ec1e68d42e761dd448721473cf36801e1064c976"
+    },
+    "fields":{
+      "file": "bukkit-380678f7-members.csrg",
+      "hash": "ca84c12a6533f52754813e8ef02f20449009402a"
+    }
   }
 ]
