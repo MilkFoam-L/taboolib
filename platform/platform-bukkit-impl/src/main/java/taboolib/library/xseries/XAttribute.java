@@ -29,10 +29,10 @@ import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import taboolib.library.xseries.base.annotations.XInfo;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -76,6 +76,12 @@ public final class XAttribute extends XModule<XAttribute, Attribute> {
             SUBMERGED_MINING_SPEED = std(/* v1.20.3+ */ "submerged_mining_speed", "player.submerged_mining_speed"),
             SWEEPING_DAMAGE_RATIO = std(/* v1.20.3+ */ "sweeping_damage_ratio", "player.sweeping_damage_ratio"),
             SPAWN_REINFORCEMENTS = std(/* v1.20.3+ */ "spawn_reinforcements", "zombie.spawn_reinforcements");
+
+    @XInfo(since = "1.21.6")
+    public static final XAttribute
+            CAMERA_DISTANCE = std("camera_distance"),
+            WAYPOINT_TRANSMIT_RANGE = std("waypoint_transmit_range"),
+            WAYPOINT_RECEIVE_RANGE = std("waypoint_receive_range");
 
     private static final boolean SUPPORTS_MODERN_MODIFIERS;
 
