@@ -209,14 +209,14 @@
     }
   },
   {
-    "version": "1.21.6",
+    "version": "1.21.7",
     "combined": {
-      "file": "bukkit-1.21.6-cl.csrg",
+      "file": "bukkit-1.21.7-cl.csrg",
       "hash": "ec1e68d42e761dd448721473cf36801e1064c976"
     },
     "fields":{
-      "file": "bukkit-380678f7-members.csrg",
-      "hash": "ca84c12a6533f52754813e8ef02f20449009402a"
+      "file": "bukkit-541d8131-members.csrg",
+      "hash": "0555763ae246fa29d22b11096e9021f850136a3"
     }
   }
 ]
