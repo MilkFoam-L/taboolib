@@ -94,7 +94,7 @@ abstract class NMSItemTag {
 
         val instance by unsafeLazy {
             when {
-                versionId >= 12107 -> nmsProxy<NMSItemTag>("{name}12107")
+                versionId >= 12106 -> nmsProxy<NMSItemTag>("{name}12106")
                 versionId >= 12105 -> nmsProxy<NMSItemTag>("{name}12105")
                 versionId >= 12005 -> nmsProxy<NMSItemTag>("{name}12005")
                 else -> nmsProxy<NMSItemTag>("{name}Legacy")

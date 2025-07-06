@@ -11,10 +11,10 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * [NMSItemTag] 的实现类
  */
-class NMSItemTag12107 : NMSItemTag() {
+class NMSItemTag12106 : NMSItemTag() {
 
     override fun newItemTag(): ItemTag {
-        return ItemTag12105()
+        return ItemTag12106()
     }
 
     override fun toMinecraftJson(itemStack: ItemStack): String {
@@ -42,7 +42,7 @@ class NMSItemTag12107 : NMSItemTag() {
             if (tag != null) itemTagToBukkitCopy(tag).asCompound() else ItemTag()
         } else {
             val tag = nmsItem.toNbt()
-            if (tag != null) itemTagToBukkitCopy(tag, true).asCompound() else ItemTag12105() // 返回一个特殊的 ItemTag
+            if (tag != null) itemTagToBukkitCopy(tag, true).asCompound() else ItemTag12106() // 返回一个特殊的 ItemTag
         }
     }
 
@@ -131,7 +131,7 @@ class NMSItemTag12107 : NMSItemTag() {
                 // 1.20.5 -> nbtTag.allKeys.xxx
                 // 1.21.5 -> nbtTag.keySet()
                 nbtTag.keySet().associateWith { itemTagToBukkitCopy(nbtTag.get(it)!!) }.let {
-                    if (onlyCustom) ItemTag(it) else ItemTag12105(it)
+                    if (onlyCustom) ItemTag(it) else ItemTag12106(it)
                 }
             }
 
@@ -157,7 +157,7 @@ class NMSItemTag12107 : NMSItemTag() {
     }
 }
 
-class ItemTag12105 : ItemTag {
+class ItemTag12106 : ItemTag {
 
     constructor() : super()
     constructor(map: Map<String, ItemTagData>) : super(map)
