@@ -296,11 +296,8 @@ open class ItemBuilder {
         }
         // CustomModelData
         try {
-            // 1.21.5+ 必须判断 hasCustomModelData() 否则报错
-            if (itemMeta.hasCustomModelData()) {
-                if (customModelData != -1) {
-                    itemMeta.setCustomModelData(customModelData)
-                }
+            if (customModelData != -1) {
+                itemMeta.setCustomModelData(customModelData)
             }
         } catch (_: NoSuchMethodError) {
         }
