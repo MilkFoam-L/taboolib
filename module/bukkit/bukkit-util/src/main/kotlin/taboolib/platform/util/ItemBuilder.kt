@@ -274,7 +274,7 @@ open class ItemBuilder {
         // 无法破坏
         try {
             itemMeta.isUnbreakable = isUnbreakable
-            } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
             try {
                 itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
             } catch (_: NoSuchMethodException) {
@@ -285,36 +285,36 @@ open class ItemBuilder {
             if (spawnType != null && itemMeta is SpawnEggMeta) {
                 itemMeta.spawnedType = spawnType
             }
-        } catch (_: NoClassDefFoundError) {
+        } catch (_: Throwable) {
         }
         // 旗帜
         try {
             if (patterns.isNotEmpty() && itemMeta is BannerMeta) {
                 patterns.forEach { itemMeta.addPattern(it) }
             }
-        } catch (_: NoClassDefFoundError) {
+        } catch (_: Throwable) {
         }
         // CustomModelData
         try {
             if (customModelData != -1) {
                 itemMeta.setCustomModelData(customModelData)
             }
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
         // Tooltip Style
         try {
             itemMeta.tooltipStyle = tooltipStyle
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
         // ItemModel
         try {
             itemMeta.itemModel = itemModel
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
         // Hide Tooltip
         try {
             itemMeta.isHideTooltip = isHideTooltip
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
         // 唯一化
         try {
@@ -328,7 +328,7 @@ open class ItemBuilder {
                 XAttribute.ATTACK_SPEED.get()?.let { itemMeta.addAttributeModifier(it, modifier) }
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
             }
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
 
         // 返回
@@ -394,7 +394,7 @@ open class ItemBuilder {
         // 无法破坏
         try {
             isUnbreakable = itemMeta.isUnbreakable
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
             try {
                 isUnbreakable = itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
             } catch (_: NoSuchMethodException) {
@@ -405,38 +405,34 @@ open class ItemBuilder {
             if (itemMeta is SpawnEggMeta && itemMeta.spawnedType != null) {
                 spawnType = itemMeta.spawnedType
             }
-        } catch (_: NoSuchMethodError) {
-        } catch (_: UnsupportedOperationException) {
+        } catch (_: Throwable) {
         }
         // 旗帜
         try {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
                 patterns += itemMeta.patterns
             }
-        } catch (_: NoClassDefFoundError) {
+        } catch (_: Throwable) {
         }
         // CustomModelData
         try {
-            // 1.21.5+ 必须判断 hasCustomModelData() 否则报错
-            if (itemMeta.hasCustomModelData()) {
-                customModelData = itemMeta.customModelData
-            }
-        } catch (_: NoSuchMethodError) {
+            customModelData = itemMeta.customModelData
+        } catch (_: Throwable) {
         }
         // Tooltip Style
         try {
             tooltipStyle = itemMeta.tooltipStyle
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
         // ItemModel
         try {
             itemModel = itemMeta.itemModel
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
         // Hide Tooltip
         try {
             isHideTooltip = itemMeta.isHideTooltip
-        } catch (_: NoSuchMethodError) {
+        } catch (_: Throwable) {
         }
     }
 }
