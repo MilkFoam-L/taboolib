@@ -78,7 +78,7 @@ class BukkitCommand : PlatformCommand {
             pluginCommand.setTabCompleter { sender, _, label, args ->
                 completer.execute(adaptCommandSender(sender), command, label, args) ?: emptyList()
             }
-            val permission = command.permission.ifEmpty { "${plugin.name.lowercase()}.command.${command.name}.use" }
+            val permission = command.permission.ifEmpty { permissionProvider(command) }
             // 修改属性
             pluginCommand.setProperty("description", command.description.ifEmpty { command.name })
             pluginCommand.setProperty("usageMessage", command.usage)
@@ -170,6 +170,13 @@ class BukkitCommand : PlatformCommand {
             Bukkit.getServer().invokeMethod<Void>("syncCommands")
             Bukkit.getOnlinePlayers().forEach { it.invokeMethod<Void>("updateCommands") }
             isSupportedUnknownCommand = true
+        }
+    }
+
+    companion object {
+
+        var permissionProvider: (command: CommandStructure) -> String = { command ->
+            "${BukkitPlugin.getInstance().name.lowercase()}.command.${command.name}.use"
         }
     }
 }
