@@ -209,13 +209,13 @@
     }
   },
   {
-    "version": "1.21.7",
+    "version": "1.21.8",
     "combined": {
-      "file": "bukkit-1.21.7-cl.csrg",
+      "file": "bukkit-1.21.8-cl.csrg",
       "hash": "ec1e68d42e761dd448721473cf36801e1064c976"
     },
     "fields":{
-      "file": "bukkit-541d8131-members.csrg",
+      "file": "bukkit-7d8f8942-members.csrg",
       "hash": "0555763ae246fa29d22b11096e9021f850136a3c"
     }
   }
