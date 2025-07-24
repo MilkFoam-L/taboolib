@@ -81,6 +81,12 @@ open class ItemBuilder {
     var name: String? = null
 
     /**
+     * 物品名称
+     * 新增于 1.20.5, 与 displayName 不同, 不可被铁砧修改
+     */
+    var itemName: String? = null
+
+    /**
      * 描述
      */
     val lore = ArrayList<String>()
@@ -213,6 +219,13 @@ open class ItemBuilder {
                 ChatColor.translateAlternateColorCodes('&', name!!)
             }
         }
+        if (itemName != null) {
+            itemName = try {
+                itemName!!.colored()
+            } catch (ex: NoClassDefFoundError) {
+                ChatColor.translateAlternateColorCodes('&', itemName!!)
+            }
+        }
         if (lore.isNotEmpty()) {
             val newLore = try {
                 lore.colored()
@@ -238,6 +251,11 @@ open class ItemBuilder {
         val itemMeta = originMeta ?: itemStack.itemMeta ?: return itemStack
         // 展示名称
         itemMeta.setDisplayName(name)
+        // 1.20.5 新增的物品名称
+        try {
+            itemMeta.setItemName(itemName)
+        } catch (_: Throwable) {
+        }
         // 描述
         itemMeta.lore = lore
         // 标签
