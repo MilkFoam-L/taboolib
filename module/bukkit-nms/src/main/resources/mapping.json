@@ -154,6 +154,17 @@
     }
   },
   {
+    "version": "1.20.5",
+    "combined": {
+      "file": "bukkit-1.20.5-cl.csrg",
+      "hash": "c5d9057ad5fdfe37dce29169c36c837e1d4ec410"
+    },
+    "fields": {
+      "file": "bukkit-4b466d94-members.csrg",
+      "hash": "c02598ec39d18e87cc2d391a71bc53a72101d425"
+    }
+  },
+  {
     "version": "1.20.6",
     "combined": {
       "file": "bukkit-1.20.6-cl.csrg",
@@ -162,6 +173,17 @@
     "fields": {
       "file": "bukkit-3600f5e0-members.csrg",
       "hash": "d97a3e4269981fe29833739af2398505ed8bba63"
+    }
+  },
+  {
+    "version": "1.21",
+    "combined": {
+      "file": "bukkit-1.21-cl.csrg",
+      "hash": "2033fa9a5919cb6af433584d67ed318f8ea3c08b"
+    },
+    "fields": {
+      "file": "bukkit-3e3bd0ca-members.csrg",
+      "hash": "e3d4992c72783da557d3ff230d0b288e9886c0d3"
     }
   },
   {
@@ -206,6 +228,28 @@
     "fields":{
       "file": "bukkit-956575d9-members.csrg",
       "hash": "2d4dbd77eafcd301418cc442cf6f93f60ebd2484"
+    }
+  },
+  {
+    "version": "1.21.6",
+    "combined": {
+      "file": "bukkit-1.21.6-cl.csrg",
+      "hash": "ec1e68d42e761dd448721473cf36801e1064c976"
+    },
+    "fields":{
+      "file": "bukkit-380678f7-members.csrg",
+      "hash": "ca84c12a6533f52754813e8ef02f20449009402a"
+    }
+  },
+  {
+    "version": "1.21.7",
+    "combined": {
+      "file": "bukkit-1.21.7-cl.csrg",
+      "hash": "ec1e68d42e761dd448721473cf36801e1064c976"
+    },
+    "fields":{
+      "file": "bukkit-541d8131-members.csrg",
+      "hash": "0555763ae246fa29d22b11096e9021f850136a3c"
     }
   },
   {
