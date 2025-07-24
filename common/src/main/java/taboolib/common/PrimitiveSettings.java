@@ -72,6 +72,18 @@ public class PrimitiveSettings {
     public static final boolean IS_FORCE_DOWNLOAD_IN_DEV_MODE = RUNTIME_PROPERTIES.getProperty("force-download-in-dev", "true").equals("true");
 
     /**
+     * 是否在被跳过的 Minecraft 版本上关闭插件
+     * 该选项仅适用于 Bukkit
+     */
+    public static final boolean IS_DISABLE_ON_SKIPPED_VERSION = RUNTIME_PROPERTIES.getProperty("disable-on-skipped-version", "true").equals("true");
+
+    /**
+     * 是否在不支持的 Minecraft 版本上关闭插件
+     * 该选项仅适用于 Bukkit
+     */
+    public static final boolean IS_DISABLE_ON_UNSUPPORTED_VERSION = RUNTIME_PROPERTIES.getProperty("disable-on-unsupported-version", "true").equals("true");
+
+    /**
      * 中央仓库
      */
     public static final String REPO_CENTRAL = RUNTIME_PROPERTIES.getProperty("repo-central", getProperty("taboolib.repo.central", "https://maven.aliyun.com/repository/central"));

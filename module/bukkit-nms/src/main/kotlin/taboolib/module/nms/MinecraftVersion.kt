@@ -4,6 +4,7 @@ import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
+import taboolib.common.PrimitiveSettings
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.io.isDevelopmentMode
 import taboolib.common.platform.Awake
@@ -275,6 +276,8 @@ object MinecraftVersion {
                     The current Minecraft version has been skipped for support, usually due to an emergency fix released by Mojang.
                     """.t()
                 )
+                // 仅在非开发模式下禁用插件
+                if (!isDevelopmentMode && PrimitiveSettings.IS_DISABLE_ON_SKIPPED_VERSION) disablePlugin()
             } else {
                 warning(
                     """
@@ -282,9 +285,9 @@ object MinecraftVersion {
                     The current Minecraft version is not supported, please wait for the plugin to be adapted.
                     """.t()
                 )
+                // 仅在非开发模式下禁用插件
+                if (!isDevelopmentMode && PrimitiveSettings.IS_DISABLE_ON_UNSUPPORTED_VERSION) disablePlugin()
             }
-            // 仅在非开发模式下禁用插件
-            if (!isDevelopmentMode) disablePlugin()
         }
         // 在 Bukkit 平台下，注册 Reflex 重定向实现
         if (runningPlatform == Platform.BUKKIT) {
