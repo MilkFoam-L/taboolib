@@ -119,7 +119,7 @@ object MinecraftVersion {
      * 主版本号
      */
     val major by unsafeLazy {
-        supportedVersion.indexOfFirst { it.contains(runningVersion) }
+        supportedVersion.indexOfFirst { it.any { ver -> ver.contains(runningVersion) } }
     }
 
     /**
@@ -127,7 +127,7 @@ object MinecraftVersion {
      */
     val minor by unsafeLazy {
         if (major != -1) {
-            supportedVersion[major].indexOf(runningVersion)
+            supportedVersion[major].indexOfFirst { it.contains(runningVersion) }
         } else {
             -1
         }
